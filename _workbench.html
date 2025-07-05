@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Creator Pro Workbench</title>
+    <!-- This links to your actual plugin CSS file -->
+    <link rel="stylesheet" href="assets/admin.css">
+
+    <!-- Basic styles to simulate the WordPress admin environment -->
+    <style>
+        body {
+            background-color: #f0f0f1;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #1d2327;
+        }
+        /* --- Simulated Admin Bar --- */
+        #sim-wpadminbar {
+            background-color: #1d2327;
+            color: #fff;
+            height: 32px;
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+        }
+        #sim-wpadminbar a {
+            color: #eee;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        #sim-wpadminbar a:hover {
+            color: #00a0d2;
+        }
+        /* --- Main Content Area --- */
+        #sim-wpbody {
+            padding: 20px;
+        }
+        .sim-postbox {
+            background: #fff;
+            border: 1px solid #c3c4c7;
+            box-shadow: 0 1px 1px rgba(0,0,0,.04);
+            margin-top: 20px;
+        }
+        .sim-postbox .hndle {
+            font-size: 14px;
+            padding: 8px 12px;
+            margin: 0;
+            line-height: 1.4;
+            border-bottom: 1px solid #c3c4c7;
+        }
+        .sim-postbox .inside {
+            padding: 12px;
+        }
+        h1 {
+            font-size: 23px;
+            font-weight: 400;
+            margin: 0 0 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =================================================== -->
+    <!-- 1. SIMULATED WORDPRESS ADMIN BAR                    -->
+    <!-- =================================================== -->
+    <div id="sim-wpadminbar">
+        <a href="#" id="aicp-admin-bar-button">AI Creator</a>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- 2. THE FLOATING PANEL (SHOULD BE HIDDEN INITIALLY)  -->
+    <!-- This is the element our JS will toggle.           -->
+    <!-- =================================================== -->
+    <div id="aicp-floating-panel">
+        <!-- Panel Header -->
+        <div class="aicp-panel-header">
+            <h2>AI Content Creator Pro</h2>
+            <button class="aicp-close-button">&times;</button>
+        </div>
+        <!-- Panel Body -->
+        <div class="aicp-panel-body">
+            <!-- This will eventually hold the same UI as the Meta Box -->
+            <p>Floating panel content will go here.</p>
+        </div>
+        <!-- Panel Footer -->
+        <div class="aicp-panel-footer">
+            <button class="aicp-button-secondary">Fine-Tuning</button>
+            <button class="aicp-button-primary">Generate</button>
+        </div>
+        <!-- Slide-out Fine-Tuning Drawer -->
+        <div id="aicp-fine-tuning-drawer">
+            <h3>Fine-Tuning Options</h3>
+            <p>Drawer content here...</p>
+        </div>
+    </div>
+
+
+    <!-- =================================================== -->
+    <!-- 3. SIMULATED MAIN PAGE CONTENT & META BOX           -->
+    <!-- =================================================== -->
+    <div id="sim-wpbody">
+        <h1>Simulated "Edit Post" Page</h1>
+
+        <div class="sim-postbox">
+            <h2 class="hndle"><span>AI Content Creator Pro</span></h2>
+            <div class="inside">
+                <!-- This is a stand-in for our actual plugin's UI -->
+                <p><strong>Category:</strong><br>
+                <select>
+                    <option>Select a Category...</option>
+                    <option>Blog Post</option>
+                    <option>Product Description</option>
+                </select></p>
+
+                <p><strong>Format:</strong> (Should be conditional on Category)<br>
+                <select>
+                    <option>Select a Format...</option>
+                </select></p>
+
+                <p><strong>Custom Personality:</strong><br>
+                <textarea placeholder="e.g., 'A witty expert on Roman history'"></textarea></p>
+
+                <p><label><input type="checkbox"> Bypass Personality</label></p>
+            </div>
+        </div>
+
+        <p><em>Other page content like the main editor would be here...</em></p>
+    </div>
+
+
+    <!-- =================================================== -->
+    <!-- SCRIPT LOADING                                      -->
+    <!-- This links to your actual plugin JS file          -->
+    <!-- =================================================== -->
+    <script src="assets/admin.js"></script>
+
+</body>
+</html>
