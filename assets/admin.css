@@ -1,125 +1,136 @@
-/* AI Content Creator Pro - Admin CSS v1.6.1 (Layout Fixes) */
+/* --- AI Content Creator Pro - Main Styles --- */
 
-:root {
-    --aicp-bg-main: #fff;
-    --aicp-bg-secondary: #f0f0f1; /* Changed to standard WP gray */
-    --aicp-border-color: #dcdcde;
-    --aicp-primary-blue: #2271b1;
-    --aicp-text-main: #1d2327;
-    --aicp-text-secondary: #50575e;
-    --aicp-spacing-unit: 8px;
-    --aicp-drawer-width: 320px;
+/* =================================================== */
+/* 1. FLOATING PANEL                                   */
+/* =================================================== */
+#aicp-floating-panel {
+    /* Positioning & Sizing */
+    position: fixed;
+    top: 50px; /* Position below a typical admin bar */
+    right: 20px;
+    width: 400px;
+    max-width: 90%;
+    z-index: 99999; /* High z-index to stay on top */
+
+    /* Appearance */
+    background-color: #ffffff;
+    border: 1px solid #c3c4c7;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-radius: 4px;
+
+    /* Hide/Show Behavior (The "Before" State) */
+    visibility: hidden; /* Start hidden and inaccessible to screen readers */
+    opacity: 0;
+    transform: translateY(-10px); /* Start slightly up for a nice effect */
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out, visibility 0.2s;
 }
 
-/* ---===[ Main Meta Box & Panel Instance Layout ]===--- */
-.aicp-generator-instance {
-    background-color: var(--aicp-bg-secondary);
+/* This class is added by JavaScript to show the panel */
+#aicp-floating-panel.aicp-panel-visible {
+    /* The "After" State */
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
 }
-.aicp-meta-box {
-    border: 1px solid var(--aicp-border-color);
-    background: none; /* The instance now handles background */
-}
-.aicp-field-group {
-    margin-bottom: calc(var(--aicp-spacing-unit) * 2); /* 16px */
-}
-.aicp-field-group label {
-    font-weight: 600;
-    display: inline-flex; 
-    align-items: center;
-    gap: 6px; 
-    margin-bottom: var(--aicp-spacing-unit);
-    color: var(--aicp-text-main);
-}
-.aicp-generator-instance input[type="text"],
-.aicp-generator-instance select,
-.aicp-generator-instance textarea {
-    width: 100%;
-    padding: var(--aicp-spacing-unit) calc(var(--aicp-spacing-unit) * 1.5);
-    border: 1px solid var(--aicp-border-color);
-    border-radius: 3px; 
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07);
-    transition: border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
-    font-size: 14px; 
-    background-color: var(--aicp-bg-main);
-}
-.aicp-generator-instance input[type="text"]:focus,
-.aicp-generator-instance select:focus,
-.aicp-generator-instance textarea:focus {
-    border-color: var(--aicp-primary-blue);
-    box-shadow: 0 0 0 1px var(--aicp-primary-blue);
-    outline: 1px solid transparent; 
-}
-.aicp-generator-instance textarea { min-height: 90px; }
 
-/* ---===[ Meta Box Header & Footer ]===--- */
-.aicp-meta-box-header {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: var(--aicp-spacing-unit) calc(var(--aicp-spacing-unit) * 2); 
-    border-bottom: 1px solid var(--aicp-border-color);
-    background-color: var(--aicp-bg-main);
-}
-.aicp-meta-box-header .aicp-tune-btn {
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500; 
-    color: var(--aicp-primary-blue);
-    display: inline-flex;
-    align-items: center;
-    gap: 5px; 
-    padding: 4px 8px;
-    border: 1px solid transparent; 
-    border-radius: 3px;
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
-}
-.aicp-meta-box-header .aicp-tune-btn:hover {
-    background-color: var(--aicp-bg-secondary);
-    border-color: var(--aicp-border-color);
-}
-.aicp-meta-box-header .aicp-tune-btn .dashicons { font-size: 18px; line-height: 1; }
-
-.aicp-meta-box-footer {
+/* Panel Header */
+.aicp-panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: calc(var(--aicp-spacing-unit) * 2); 
-    border-top: 1px solid var(--aicp-border-color);
-    background-color: var(--aicp-bg-secondary); 
-}
-.aicp-meta-box-footer .aicp-generate-btn {
-    min-width: 150px; /* Sensible default width */
+    padding: 12px 16px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f6f7f7;
 }
 
-/* ---===[ Drawer Layout & Animation ]===--- */
-.aicp-drawer-wrapper {
-    position: relative; 
-    display: flex; 
-    overflow-x: hidden; /* Important for horizontal overflow */
+.aicp-panel-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    padding: 0;
+    color: #1d2327;
 }
-.aicp-main-content {
-    flex-grow: 1; 
-    padding: calc(var(--aicp-spacing-unit) * 2.5); /* 20px */
-    transition: margin-right 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
-    min-width: 0; 
+
+.aicp-close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: #50575e;
+    padding: 0 4px;
 }
-.aicp-drawer {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: var(--aicp-drawer-width);
-    height: 100%;
-    background-color: var(--aicp-bg-main);
-    border-left: 1px solid var(--aicp-border-color);
-    transform: translateX(100%); 
-    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+.aicp-close-button:hover {
+    color: #007cba;
+}
+
+/* Panel Body */
+.aicp-panel-body {
+    padding: 16px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* Panel Footer */
+.aicp-panel-footer {
     display: flex;
-    flex-direction: column;
-    z-index: 10; 
+    justify-content: flex-end;
+    align-items: center;
+    padding: 12px 16px;
+    border-top: 1px solid #ddd;
+    background-color: #f6f7f7;
 }
-.aicp-drawer-wrapper.is-drawer-open .aicp-drawer { transform: translateX(0); }
-.aicp-drawer-wrapper.is-drawer-open .aicp-main-content { margin-right: var(--aicp-drawer-width); }
-/* ... Other drawer styles unchanged ... */
 
-/* ---===[ Other Styles (Tooltip, Switch, etc.) ---=== */
-/* ... All other styles from the previous version remain the same ... */
+/* =================================================== */
+/* 2. FINE-TUNING DRAWER (placeholder styles)          */
+/* =================================================== */
+#aicp-fine-tuning-drawer {
+    display: none; /* Hidden for now */
+    padding: 16px;
+    border-top: 1px solid #ddd;
+    background: #fafafa;
+}
+
+/* =================================================== */
+/* 3. SHARED UI ELEMENTS (Buttons, etc.)               */
+/* =================================================== */
+.aicp-button-primary {
+    background: #007cba;
+    border-color: #007cba;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: none;
+    padding: 6px 14px;
+    font-size: 13px;
+    line-height: normal;
+    height: auto;
+    cursor: pointer;
+    border-radius: 3px;
+    border-width: 1px;
+    border-style: solid;
+    margin-left: 8px;
+}
+.aicp-button-primary:hover {
+    background: #0071a1;
+    border-color: #0071a1;
+}
+
+.aicp-button-secondary {
+    background: #f6f7f7;
+    border-color: #c3c4c7;
+    color: #50575e;
+    text-decoration: none;
+    padding: 6px 14px;
+    font-size: 13px;
+    line-height: normal;
+    height: auto;
+    cursor: pointer;
+    border-radius: 3px;
+    border-width: 1px;
+    border-style: solid;
+}
+.aicp-button-secondary:hover {
+    background: #f0f0f1;
+    border-color: #8c8f94;
+    color: #222;
+}
