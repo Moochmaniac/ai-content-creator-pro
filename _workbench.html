@@ -41,15 +41,22 @@
                 <option value="">Select a category first...</option>
             </select>
         </div>
-        <div class="aicp-form-row">
-            <label for="aicp-personality-textarea">Custom Personality (Optional)</label>
-            <textarea class="aicp-personality-textarea" placeholder="e.g., A witty expert on Roman history"></textarea>
-        </div>
+        
+        <!-- === REVISED PERSONALITY SECTION === -->
         <div class="aicp-form-row">
             <label>
-                <input type="checkbox" class="aicp-bypass-toggle"> Bypass Personality
+                <input type="checkbox" class="aicp-use-personality-toggle"> Use Custom Personality
             </label>
         </div>
+        <!-- This container will be shown/hidden by JS -->
+        <div class="aicp-personality-input-container">
+            <div class="aicp-form-row">
+                <label for="aicp-personality-textarea">Personality Prompt</label>
+                <textarea class="aicp-personality-textarea" placeholder="e.g., A witty expert on Roman history"></textarea>
+            </div>
+        </div>
+        <!-- ===================================== -->
+
     </template>
 
     <div id="aicp-floating-panel">
@@ -63,10 +70,6 @@
         <div class="aicp-panel-footer">
             <button class="aicp-button-secondary">Fine-Tuning</button>
             <button class="aicp-button-primary">Generate</button>
-        </div>
-        <div id="aicp-fine-tuning-drawer">
-            <h3>Fine-Tuning Options</h3>
-            <p>Drawer content here...</p>
         </div>
     </div>
 
