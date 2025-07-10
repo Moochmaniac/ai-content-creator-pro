@@ -37,6 +37,10 @@ document.addEventListener('DOMContentLoaded', function() {
             "Instagram - Caption Ideas (List)",
             "Instagram - Photo/Reel Caption",
             "Instagram - Product Feature Caption"
+        ],
+        "Tools": [
+            "Keyword Research",
+            "AI Image Generation"
         ]
     };
 
