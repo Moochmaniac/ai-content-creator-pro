@@ -1,135 +1,90 @@
-/* --- AI Content Creator Pro - Main Styles --- */
+/**
+ * AI Content Creator Pro Admin Script
+ * VERSION 1.1
+ */
+document.addEventListener('DOMContentLoaded', function() {
 
-/* =================================================== */
-/* 1. FLOATING PANEL                                   */
-/* =================================================== */
-#aicp-floating-panel {
-    position: fixed;
-    top: 50px;
-    right: 20px;
-    width: 400px;
-    max-width: 90%;
-    z-index: 99999;
-    background-color: #ffffff;
-    border: 1px solid #c3c4c7;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    border-radius: 4px;
-    visibility: hidden;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out, visibility 0.2s;
-}
-#aicp-floating-panel.aicp-panel-visible {
-    visibility: visible;
-    opacity: 1;
-    transform: translateY(0);
-}
-.aicp-panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid #ddd;
-    background-color: #f6f7f7;
-}
-.aicp-panel-header h2 {
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0;
-    padding: 0;
-    color: #1d2327;
-}
-.aicp-close-button {
-    background: none;
-    border: none;
-    font-size: 24px;
-    line-height: 1;
-    cursor: pointer;
-    color: #50575e;
-    padding: 0 4px;
-}
-.aicp-close-button:hover { color: #007cba; }
-.aicp-panel-body {
-    padding: 16px;
-    max-height: 70vh;
-    overflow-y: auto;
-}
-.aicp-panel-footer {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 12px 16px;
-    border-top: 1px solid #ddd;
-    background-color: #f6f7f7;
-}
+    // --- Versioning ---
+    const SCRIPT_VERSION = '1.1';
+    const CSS_VERSION = '1.1'; // Manually sync with CSS file version
 
-/* =================================================== */
-/* 2. FORM ELEMENTS                                    */
-/* =================================================== */
-.aicp-form-row {
-    margin-bottom: 12px;
-}
-.aicp-form-row:last-child {
-    margin-bottom: 0;
-}
-.aicp-form-row label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-.aicp-form-row select,
-.aicp-form-row textarea {
-    width: 100%;
-    padding: 6px;
-    box-sizing: border-box;
-}
-.aicp-form-row textarea {
-    min-height: 80px;
-}
+    const aicpContentData = {
+        "Select a Category...": [],
+        "Blog Post": ["Title Ideas", "Outline", "Introduction Paragraph", "Concluding Paragraph", "Full Draft (from title)"],
+        "Product Description": ["Feature-to-Benefit Bullets", "Short eCommerce Description", "Full eCommerce Description", "Ad Copy (PPC)"],
+        "Marketing Email": ["Subject Line Ideas", "Promotional Email Draft", "Welcome Email Draft"],
+        "Social Media Post": ["X (Twitter) - Single Tweet", "X (Twitter) - Tweet Ideas (List)", "X (Twitter) - Thread Starter", "Facebook - Post Ideas (List)", "Facebook - Short Post (Text Only)", "Facebook - Ad Copy", "LinkedIn - Post Ideas (List)", "LinkedIn - Professional Post", "LinkedIn - Article Introduction", "Instagram - Caption Ideas (List)", "Instagram - Photo/Reel Caption", "Instagram - Product Feature Caption"],
+        "Tools": ["Keyword Research", "AI Image Generation"]
+    };
 
-/* === NEW: Styles for the personality container === */
-.aicp-personality-input-container {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out, margin-top 0.3s ease-in-out;
-    margin-top: 0;
-    /* Remove bottom margin from the form row inside it to prevent double-spacing */
-    .aicp-form-row {
-        margin-bottom: 0;
+    function initializeCreatorForm(container) {
+        if (!container) return;
+
+        const template = document.getElementById('aicp-ui-form-template');
+        if (!template) return;
+
+        container.innerHTML = '';
+        const formInstance = template.content.cloneNode(true);
+        container.appendChild(formInstance);
+
+        const categorySelect = container.querySelector('.aicp-category-select');
+        const formatSelect = container.querySelector('.aicp-format-select');
+        const usePersonalityToggle = container.querySelector('.aicp-use-personality-toggle');
+        const personalityContainer = container.querySelector('.aicp-personality-input-container');
+
+        Object.keys(aicpContentData).forEach(category => {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = category;
+            categorySelect.appendChild(option);
+        });
+
+        categorySelect.addEventListener('change', function() {
+            const formats = aicpContentData[this.value] || [];
+            formatSelect.innerHTML = '';
+            if (formats.length > 0) {
+                formatSelect.disabled = false;
+                formatSelect.innerHTML = '<option value="">Select a Format...</option>';
+                formats.forEach(format => {
+                    const option = document.createElement('option');
+                    option.value = format;
+                    option.textContent = format;
+                    formatSelect.appendChild(option);
+                });
+            } else {
+                formatSelect.disabled = true;
+                formatSelect.innerHTML = '<option value="">Select a category first...</option>';
+            }
+        });
+        
+        if (usePersonalityToggle && personalityContainer) {
+            usePersonalityToggle.addEventListener('change', function() {
+                personalityContainer.classList.toggle('aicp-visible', this.checked);
+            });
+        }
     }
-}
-.aicp-personality-input-container.aicp-visible {
-    max-height: 120px; /* Ample height for textarea + label + margin */
-    opacity: 1;
-    margin-top: -4px; /* Adjust to look good with the checkbox row above */
-    margin-bottom: 12px;
-}
-/* =============================================== */
+    
+    // --- Initialize Core UI and Logic ---
+    const adminBarButton = document.getElementById('aicp-admin-bar-button');
+    const floatingPanel = document.getElementById('aicp-floating-panel');
+    if (adminBarButton && floatingPanel) {
+        const closeButton = floatingPanel.querySelector('.aicp-close-button');
+        function togglePanel(event) {
+            if (event) event.preventDefault();
+            floatingPanel.classList.toggle('aicp-panel-visible');
+        }
+        adminBarButton.addEventListener('click', togglePanel);
+        closeButton.addEventListener('click', togglePanel);
+    }
+    
+    const panelBody = floatingPanel.querySelector('.aicp-panel-body');
+    const metaBoxBody = document.querySelector('.sim-postbox .inside');
+    initializeCreatorForm(panelBody);
+    initializeCreatorForm(metaBoxBody);
 
-/* =================================================== */
-/* 3. SHARED UI ELEMENTS (Buttons, etc.)               */
-/* =================================================== */
-.aicp-button-primary, .aicp-button-secondary {
-    padding: 6px 14px;
-    font-size: 13px;
-    line-height: normal;
-    height: auto;
-    cursor: pointer;
-    border-radius: 3px;
-    border-width: 1px;
-    border-style: solid;
-}
-.aicp-button-primary {
-    background: #007cba;
-    border-color: #007cba;
-    color: #fff;
-    margin-left: 8px;
-}
-.aicp-button-primary:hover { background: #0071a1; border-color: #0071a1; }
-.aicp-button-secondary {
-    background: #f6f7f7;
-    border-color: #c3c4c7;
-    color: #50575e;
-}
-.aicp-button-secondary:hover { background: #f0f0f1; border-color: #8c8f94; color: #222; }
+    // --- NEW: Populate Development Status Bar ---
+    const devStatusBar = document.getElementById('aicp-dev-status-bar');
+    if (devStatusBar) {
+        devStatusBar.textContent = `JS: v${SCRIPT_VERSION} | CSS: v${CSS_VERSION}`;
+    }
+});
