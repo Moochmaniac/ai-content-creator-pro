@@ -6,7 +6,7 @@
     <title>AI Creator Pro Workbench</title>
     <link rel="stylesheet" href="assets/admin.css">
     <style>
-        body { background-color: #f0f0f1; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; margin: 0; padding: 0; color: #1d2327; }
+        body { background-color: #f0f0f1; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; margin: 0; padding: 0; color: #1d2327; padding-bottom: 40px; /* Add padding to prevent content from being hidden by the new status bar */ }
         #sim-wpadminbar { background-color: #1d2327; color: #fff; height: 32px; padding: 0 10px; display: flex; align-items: center; }
         #sim-wpadminbar a { color: #eee; text-decoration: none; font-size: 14px; }
         #sim-wpadminbar a:hover { color: #00a0d2; }
@@ -15,7 +15,6 @@
         .sim-postbox .hndle { font-size: 14px; padding: 8px 12px; margin: 0; line-height: 1.4; border-bottom: 1px solid #c3c4c7; }
         .sim-postbox .inside { padding: 12px; }
         h1 { font-size: 23px; font-weight: 400; margin: 0 0 20px; }
-        /* Style for our form elements */
         .aicp-form-row { margin-bottom: 12px; }
         .aicp-form-row label { display: block; font-weight: 600; margin-bottom: 4px; }
         .aicp-form-row select, .aicp-form-row textarea { width: 100%; padding: 6px; box-sizing: border-box; }
@@ -27,13 +26,10 @@
         <a href="#" id="aicp-admin-bar-button">AI Creator</a>
     </div>
 
-    <!-- The actual UI form that will be duplicated -->
     <template id="aicp-ui-form-template">
         <div class="aicp-form-row">
             <label for="aicp-category-select">Category</label>
-            <select class="aicp-category-select">
-                <!-- Options will be populated by JS -->
-            </select>
+            <select class="aicp-category-select"></select>
         </div>
         <div class="aicp-form-row">
             <label for="aicp-format-select">Format</label>
@@ -41,48 +37,31 @@
                 <option value="">Select a category first...</option>
             </select>
         </div>
-        
-        <!-- === REVISED PERSONALITY SECTION === -->
         <div class="aicp-form-row">
-            <label>
-                <input type="checkbox" class="aicp-use-personality-toggle"> Use Custom Personality
-            </label>
+            <label><input type="checkbox" class="aicp-use-personality-toggle"> Use Custom Personality</label>
         </div>
-        <!-- This container will be shown/hidden by JS -->
         <div class="aicp-personality-input-container">
             <div class="aicp-form-row">
                 <label for="aicp-personality-textarea">Personality Prompt</label>
                 <textarea class="aicp-personality-textarea" placeholder="e.g., A witty expert on Roman history"></textarea>
             </div>
         </div>
-        <!-- ===================================== -->
-
     </template>
 
     <div id="aicp-floating-panel">
-        <div class="aicp-panel-header">
-            <h2>AI Content Creator Pro</h2>
-            <button class="aicp-close-button">×</button>
-        </div>
-        <div class="aicp-panel-body">
-            <!-- The UI form will be injected here by JS -->
-        </div>
-        <div class="aicp-panel-footer">
-            <button class="aicp-button-secondary">Fine-Tuning</button>
-            <button class="aicp-button-primary">Generate</button>
-        </div>
+        <div class="aicp-panel-header"><h2>AI Content Creator Pro</h2><button class="aicp-close-button">×</button></div>
+        <div class="aicp-panel-body"></div>
+        <div class="aicp-panel-footer"><button class="aicp-button-secondary">Fine-Tuning</button><button class="aicp-button-primary">Generate</button></div>
     </div>
 
     <div id="sim-wpbody">
         <h1>Simulated "Edit Post" Page</h1>
-        <div class="sim-postbox">
-            <h2 class="hndle"><span>AI Content Creator Pro</span></h2>
-            <div class="inside">
-                <!-- The UI form will also be injected here by JS -->
-            </div>
-        </div>
+        <div class="sim-postbox"><h2 class="hndle"><span>AI Content Creator Pro</span></h2><div class="inside"></div></div>
         <p><em>Other page content...</em></p>
     </div>
+
+    <!-- === NEW: Development Version Status Bar === -->
+    <div id="aicp-dev-status-bar"></div>
 
     <script src="assets/admin.js"></script>
 </body>
