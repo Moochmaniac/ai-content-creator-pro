@@ -1,90 +1,130 @@
 /**
- * AI Content Creator Pro Admin Script
- * VERSION 1.1
+ * AI Content Creator Pro - Command Center
+ * VERSION 2.0
  */
 document.addEventListener('DOMContentLoaded', function() {
 
-    // --- Versioning ---
-    const SCRIPT_VERSION = '1.1';
-    const CSS_VERSION = '1.1'; // Manually sync with CSS file version
+    // --- Application Object: Encapsulates all logic ---
+    const AICP_App = {
+        // --- Properties ---
+        elements: {}, // To store frequently accessed DOM elements
+        state: {
+            currentView: 'standard-content', // The default view
+        },
+        versions: {
+            js: '2.0',
+            css: '2.0',
+        },
 
-    const aicpContentData = {
-        "Select a Category...": [],
-        "Blog Post": ["Title Ideas", "Outline", "Introduction Paragraph", "Concluding Paragraph", "Full Draft (from title)"],
-        "Product Description": ["Feature-to-Benefit Bullets", "Short eCommerce Description", "Full eCommerce Description", "Ad Copy (PPC)"],
-        "Marketing Email": ["Subject Line Ideas", "Promotional Email Draft", "Welcome Email Draft"],
-        "Social Media Post": ["X (Twitter) - Single Tweet", "X (Twitter) - Tweet Ideas (List)", "X (Twitter) - Thread Starter", "Facebook - Post Ideas (List)", "Facebook - Short Post (Text Only)", "Facebook - Ad Copy", "LinkedIn - Post Ideas (List)", "LinkedIn - Professional Post", "LinkedIn - Article Introduction", "Instagram - Caption Ideas (List)", "Instagram - Photo/Reel Caption", "Instagram - Product Feature Caption"],
-        "Tools": ["Keyword Research", "AI Image Generation"]
+        /**
+         * The main entry point for the application.
+         */
+        init() {
+            console.log('AICP Command Center v2.0 Initializing...');
+            this.cacheDOMElements();
+            this.registerEventListeners();
+            this.updateDevStatus();
+
+            // Render the default view on startup
+            this.renderView(this.state.currentView);
+        },
+
+        /**
+         * Find and store key DOM elements to avoid repeated lookups.
+         */
+        cacheDOMElements() {
+            this.elements.taskSelector = document.getElementById('aicp-task-selector');
+            this.elements.moduleContainer = document.getElementById('aicp-module-container');
+            this.elements.devStatusBar = document.getElementById('aicp-dev-status-bar');
+            this.elements.settingsPanel = document.getElementById('aicp-settings-panel');
+            this.elements.settingsBtn = document.getElementById('aicp-generation-settings-btn');
+            this.elements.settingsCloseBtn = document.getElementById('aicp-settings-panel-close-btn');
+            this.elements.advancedToggle = document.getElementById('aicp-advanced-toggle');
+            this.elements.advancedSettings = document.getElementById('aicp-advanced-settings');
+        },
+
+        /**
+         * Central location for all event listeners.
+         */
+        registerEventListeners() {
+            // Main Task Selector
+            this.elements.taskSelector.addEventListener('change', (e) => {
+                this.renderView(e.target.value);
+            });
+
+            // Settings Panel Toggle
+            this.elements.settingsBtn.addEventListener('click', () => {
+                this.elements.settingsPanel.classList.add('is-visible');
+            });
+            this.elements.settingsCloseBtn.addEventListener('click', () => {
+                this.elements.settingsPanel.classList.remove('is-visible');
+            });
+
+            // Advanced "Mad Scientist" Mode Toggle
+            this.elements.advancedToggle.addEventListener('change', (e) => {
+                this.elements.advancedSettings.classList.toggle('is-expanded', e.target.checked);
+            });
+
+            // Using Event Delegation for dynamic buttons inside the module container
+            this.elements.moduleContainer.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.classList.contains('aicp-enhance-prompt')) {
+                    alert('[PLACEHOLDER] AI Prompt Enhancement Activated!');
+                }
+                if (target.classList.contains('aicp-copy-button')) {
+                    alert('[PLACEHOLDER] Copied to clipboard!');
+                }
+            });
+
+             // Event Delegation for specific toggles
+             this.elements.moduleContainer.addEventListener('change', (e) => {
+                const target = e.target;
+                if (target.id === 'include-ai-image-toggle') {
+                    const imagePromptSection = document.getElementById('ai-image-prompt-section');
+                    if (imagePromptSection) {
+                        imagePromptSection.classList.toggle('is-expanded', target.checked);
+                    }
+                }
+            });
+        },
+
+        /**
+         * Main UI rendering function. Clears the container and injects the selected template.
+         * @param {string} viewName - The name of the view to render (e.g., 'standard-content').
+         */
+        renderView(viewName) {
+            this.state.currentView = viewName;
+            const template = document.getElementById(`${viewName}-template`);
+            
+            if (!template) {
+                console.error(`AICP Error: Template for view "${viewName}" not found.`);
+                this.elements.moduleContainer.innerHTML = `<p class="aicp-error">Error: Could not load view.</p>`;
+                return;
+            }
+
+            // Clear the container and inject the new view
+            this.elements.moduleContainer.innerHTML = '';
+            this.elements.moduleContainer.appendChild(template.content.cloneNode(true));
+
+            console.log(`Rendered view: ${viewName}`);
+            
+            // Call specific init functions for views that need extra JS logic
+            // This is a scalable way to manage view-specific code.
+            // if (viewName === 'some-complex-view') { this.initSomeComplexView(); }
+        },
+        
+        /**
+         * Updates the developer status bar with current file versions.
+         */
+        updateDevStatus() {
+            if (this.elements.devStatusBar) {
+                this.elements.devStatusBar.textContent = `AICP v3 | JS: v${this.versions.js} | CSS: v${this.versions.css}`;
+            }
+        },
+
     };
 
-    function initializeCreatorForm(container) {
-        if (!container) return;
+    // --- Run the Application ---
+    AICP_App.init();
 
-        const template = document.getElementById('aicp-ui-form-template');
-        if (!template) return;
-
-        container.innerHTML = '';
-        const formInstance = template.content.cloneNode(true);
-        container.appendChild(formInstance);
-
-        const categorySelect = container.querySelector('.aicp-category-select');
-        const formatSelect = container.querySelector('.aicp-format-select');
-        const usePersonalityToggle = container.querySelector('.aicp-use-personality-toggle');
-        const personalityContainer = container.querySelector('.aicp-personality-input-container');
-
-        Object.keys(aicpContentData).forEach(category => {
-            const option = document.createElement('option');
-            option.value = category;
-            option.textContent = category;
-            categorySelect.appendChild(option);
-        });
-
-        categorySelect.addEventListener('change', function() {
-            const formats = aicpContentData[this.value] || [];
-            formatSelect.innerHTML = '';
-            if (formats.length > 0) {
-                formatSelect.disabled = false;
-                formatSelect.innerHTML = '<option value="">Select a Format...</option>';
-                formats.forEach(format => {
-                    const option = document.createElement('option');
-                    option.value = format;
-                    option.textContent = format;
-                    formatSelect.appendChild(option);
-                });
-            } else {
-                formatSelect.disabled = true;
-                formatSelect.innerHTML = '<option value="">Select a category first...</option>';
-            }
-        });
-        
-        if (usePersonalityToggle && personalityContainer) {
-            usePersonalityToggle.addEventListener('change', function() {
-                personalityContainer.classList.toggle('aicp-visible', this.checked);
-            });
-        }
-    }
-    
-    // --- Initialize Core UI and Logic ---
-    const adminBarButton = document.getElementById('aicp-admin-bar-button');
-    const floatingPanel = document.getElementById('aicp-floating-panel');
-    if (adminBarButton && floatingPanel) {
-        const closeButton = floatingPanel.querySelector('.aicp-close-button');
-        function togglePanel(event) {
-            if (event) event.preventDefault();
-            floatingPanel.classList.toggle('aicp-panel-visible');
-        }
-        adminBarButton.addEventListener('click', togglePanel);
-        closeButton.addEventListener('click', togglePanel);
-    }
-    
-    const panelBody = floatingPanel.querySelector('.aicp-panel-body');
-    const metaBoxBody = document.querySelector('.sim-postbox .inside');
-    initializeCreatorForm(panelBody);
-    initializeCreatorForm(metaBoxBody);
-
-    // --- NEW: Populate Development Status Bar ---
-    const devStatusBar = document.getElementById('aicp-dev-status-bar');
-    if (devStatusBar) {
-        devStatusBar.textContent = `JS: v${SCRIPT_VERSION} | CSS: v${CSS_VERSION}`;
-    }
 });
