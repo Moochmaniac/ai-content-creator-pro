@@ -3,65 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Creator Pro Workbench</title>
+    <title>AI Creator Pro Workbench - Command Center v3</title>
     <link rel="stylesheet" href="assets/admin.css">
-    <style>
-        body { background-color: #f0f0f1; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; margin: 0; padding: 0; color: #1d2327; padding-bottom: 40px; /* Add padding to prevent content from being hidden by the new status bar */ }
-        #sim-wpadminbar { background-color: #1d2327; color: #fff; height: 32px; padding: 0 10px; display: flex; align-items: center; }
-        #sim-wpadminbar a { color: #eee; text-decoration: none; font-size: 14px; }
-        #sim-wpadminbar a:hover { color: #00a0d2; }
-        #sim-wpbody { padding: 20px; }
-        .sim-postbox { background: #fff; border: 1px solid #c3c4c7; box-shadow: 0 1px 1px rgba(0,0,0,.04); margin-top: 20px; }
-        .sim-postbox .hndle { font-size: 14px; padding: 8px 12px; margin: 0; line-height: 1.4; border-bottom: 1px solid #c3c4c7; }
-        .sim-postbox .inside { padding: 12px; }
-        h1 { font-size: 23px; font-weight: 400; margin: 0 0 20px; }
-        .aicp-form-row { margin-bottom: 12px; }
-        .aicp-form-row label { display: block; font-weight: 600; margin-bottom: 4px; }
-        .aicp-form-row select, .aicp-form-row textarea { width: 100%; padding: 6px; box-sizing: border-box; }
-        .aicp-form-row textarea { min-height: 80px; }
-    </style>
 </head>
 <body>
-    <div id="sim-wpadminbar">
-        <a href="#" id="aicp-admin-bar-button">AI Creator</a>
+
+    <!-- Main Plugin Wrapper -->
+    <div id="aicp-container">
+        <!-- Header: Task Selector -->
+        <div class="aicp-main-header">
+            <div class="aicp-header-title">AI Creator Pro</div>
+            <div class="aicp-task-selector-wrapper">
+                <label for="aicp-task-selector">Select a Task:</label>
+                <select id="aicp-task-selector">
+                    <option value="standard-content">Content Creation</option>
+                    <option value="image-studio">Image Studio</option>
+                    <option value="code-assistant">Code Assistant</option>
+                    <option value="fleet-manager">Content Fleet Manager</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Dynamic Module Container: JS will inject templates here -->
+        <div id="aicp-module-container">
+            <!-- Initial content will be loaded by JS -->
+        </div>
+
+        <!-- Generate Button & Settings -->
+        <div class="aicp-main-footer">
+            <button id="aicp-generation-settings-btn" class="aicp-icon-button" title="[PLACEHOLDER] Open generation settings">⚙️</button>
+            <button id="aicp-main-generate-btn" class="aicp-button-primary">Generate</button>
+        </div>
+
     </div>
 
-    <template id="aicp-ui-form-template">
-        <div class="aicp-form-row">
-            <label for="aicp-category-select">Category</label>
-            <select class="aicp-category-select"></select>
+    <!-- Right-side Slide-out Panel for Generation Settings ("Mad Scientist Mode") -->
+    <div id="aicp-settings-panel">
+        <div class="aicp-panel-header">
+            <h3>Generation Settings</h3>
+            <button id="aicp-settings-panel-close-btn" class="aicp-close-button">×</button>
         </div>
-        <div class="aicp-form-row">
-            <label for="aicp-format-select">Format</label>
-            <select class="aicp-format-select" disabled>
-                <option value="">Select a category first...</option>
-            </select>
-        </div>
-        <div class="aicp-form-row">
-            <label><input type="checkbox" class="aicp-use-personality-toggle"> Use Custom Personality</label>
-        </div>
-        <div class="aicp-personality-input-container">
+        <div class="aicp-panel-body">
             <div class="aicp-form-row">
-                <label for="aicp-personality-textarea">Personality Prompt</label>
-                <textarea class="aicp-personality-textarea" placeholder="e.g., A witty expert on Roman history"></textarea>
+                <label>Creativity <span class="aicp-tooltip" title="[PLACEHOLDER] Controls randomness. Higher values are more creative but can be less coherent.">🔬</span></label>
+                <input type="range" min="0" max="2" step="0.1" value="0.8" class="aicp-slider">
             </div>
+            <div class="aicp-form-row">
+                <label>Consistency <span class="aicp-tooltip" title="[PLACEHOLDER] Controls the likelihood of sticking to common word patterns.">🔬</span></label>
+                <input type="range" min="0" max="1" step="0.05" value="0.95" class="aicp-slider">
+            </div>
+            <hr>
+            <div class="aicp-form-row aicp-toggle-row">
+                <label for="aicp-advanced-toggle">[PLACEHOLDER] Engage Mad Scientist Mode 🧪</label>
+                <input type="checkbox" id="aicp-advanced-toggle" class="aicp-switch">
+            </div>
+            <div id="aicp-advanced-settings" class="aicp-collapsible-section">
+                <small class="aicp-warning-text">[PLACEHOLDER] Warning: Adjusting these may cause the AI to produce unpredictable or nonsensical results!</small>
+                <div class="aicp-form-row">
+                    <label>Temperature (0.0 - 2.0) <span class="aicp-tooltip" title="Technical name for Creativity.">🔬</span></label>
+                    <input type="range" min="0" max="2" step="0.1" value="0.8" class="aicp-slider">
+                </div>
+                <div class="aicp-form-row">
+                    <label>Top P (0.0 - 1.0) <span class="aicp-tooltip" title="Technical name for Consistency.">🔬</span></label>
+                    <input type="range" min="0" max="1" step="0.05" value="0.95" class="aicp-slider">
+                </div>
+                <div class="aicp-form-row">
+                    <label>Frequency Penalty (-2.0 - 2.0) <span class="aicp-tooltip" title="[PLACEHOLDER] Discourages the AI from repeating the same phrases.">🔬</span></label>
+                    <input type="range" min="-2" max="2" step="0.1" value="0" class="aicp-slider">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Development Version Status Bar -->
+    <div id="aicp-dev-status-bar"></div>
+
+
+    <!-- ================================================================= -->
+    <!-- TEMPLATES: These are hidden and used by JS to build the UI        -->
+    <!-- ================================================================= -->
+
+    <!-- Template 1: Standard Content Creation -->
+    <template id="standard-content-template">
+        <div class="aicp-module-padding">
+            <div class="aicp-form-row">
+                <label for="topic-input">Topic / Main Idea</label>
+                <div class="aicp-input-with-button">
+                    <textarea id="topic-input" class="aicp-textarea" placeholder="e.g., The benefits of intermittent fasting for productivity"></textarea>
+                    <button class="aicp-button-secondary aicp-enhance-prompt" title="[PLACEHOLDER] Let AI improve this prompt for you">✨ Enhance</button>
+                </div>
+            </div>
+            <div class="aicp-form-row-group">
+                <div class="aicp-form-row">
+                    <label for="output-length">Output Length</label>
+                    <select id="output-length">
+                        <option>Short (~100 words)</option>
+                        <option selected>Medium (~300 words)</option>
+                        <option>Long (~750 words)</option>
+                        <option>Custom</option>
+                    </select>
+                </div>
+                <div class="aicp-form-row">
+                     <label><input type="checkbox" id="include-ai-image-toggle"> Include AI-Generated Image</label>
+                </div>
+            </div>
+             <div id="ai-image-prompt-section" class="aicp-collapsible-section">
+                <div class="aicp-form-row">
+                    <label for="image-desc-input">Image Description</label>
+                    <div class="aicp-input-with-button">
+                        <textarea id="image-desc-input" class="aicp-textarea" placeholder="e.g., A vibrant flat-lay of a healthy meal next to a laptop"></textarea>
+                        <button class="aicp-button-secondary aicp-enhance-prompt" title="[PLACEHOLDER] Let AI improve this prompt for you">✨ Enhance</button>
+                    </div>
+                </div>
+            </div>
+            <div class="aicp-collapsible-section is-expanded">
+                 <h4 class="aicp-section-title">[PLACEHOLDER] SEO & Meta Fields</h4>
+                 <!-- SEO fields will go here -->
+            </div>
+        </div>
+        <div class="aicp-output-area">
+            <div class="aicp-output-header">
+                <span>Generated Content</span>
+                <div class="aicp-action-bar">
+                    <!-- Post-generation buttons will appear here -->
+                </div>
+            </div>
+            <div class="aicp-output-content" contenteditable="true">
+                <!-- AI output appears here -->
+            </div>
+             <div class="aicp-char-counter">0 characters</div>
+        </div>
+    </template>
+    
+    <!-- Template 2: Image Studio -->
+    <template id="image-studio-template">
+        <div class="aicp-module-padding">
+            <div class="aicp-form-row">
+                <label for="image-studio-prompt">Image Description</label>
+                <div class="aicp-input-with-button">
+                    <textarea id="image-studio-prompt" class="aicp-textarea" rows="3" placeholder="e.g., An astronaut riding a unicorn on Mars, photorealistic style"></textarea>
+                    <button class="aicp-button-secondary aicp-enhance-prompt" title="[PLACEHOLDER] Let AI improve this prompt for you">✨ Enhance</button>
+                </div>
+            </div>
+            <div class="aicp-form-row-group">
+                <div class="aicp-form-row">
+                    <label>Style Preset</label>
+                    <select><option>Photorealistic</option><option>Digital Art</option><option>Vector Graphic</option></select>
+                </div>
+                <div class="aicp-form-row">
+                    <label>Aspect Ratio</label>
+                    <select><option>Square (1:1)</option><option>Widescreen (16:9)</option><option>Portrait (4:5)</option></select>
+                </div>
+                 <div class="aicp-form-row">
+                    <label>Quantity</label>
+                    <input type="number" min="1" max="4" value="1" class="aicp-input-number">
+                </div>
+            </div>
+        </div>
+        <div class="aicp-output-area aicp-image-gallery">
+            <!-- Generated images appear here -->
+             <div class="aicp-placeholder">[PLACEHOLDER] Your generated images will appear here.</div>
         </div>
     </template>
 
-    <div id="aicp-floating-panel">
-        <div class="aicp-panel-header"><h2>AI Content Creator Pro</h2><button class="aicp-close-button">×</button></div>
-        <div class="aicp-panel-body"></div>
-        <div class="aicp-panel-footer"><button class="aicp-button-secondary">Fine-Tuning</button><button class="aicp-button-primary">Generate</button></div>
-    </div>
+    <!-- Template 3: Code Assistant -->
+    <template id="code-assistant-template">
+        <div class="aicp-module-padding">
+            <div class="aicp-form-row">
+                <label for="code-prompt">Describe the code you need</label>
+                <textarea id="code-prompt" class="aicp-textarea" rows="3" placeholder="e.g., A PHP function to calculate the factorial of a number"></textarea>
+            </div>
+            <div class="aicp-form-row">
+                <label>Language</label>
+                <select><option>PHP</option><option>JavaScript</option><option>HTML</option><option>CSS</option><option>Python</option></select>
+            </div>
+        </div>
+        <div class="aicp-output-area">
+             <div class="aicp-output-header">
+                <span>Generated Code</span>
+                <button class="aicp-copy-button" title="Copy to clipboard">Copy</button>
+            </div>
+            <pre class="aicp-code-output"><code>// Your generated code will appear here.</code></pre>
+        </div>
+    </template>
 
-    <div id="sim-wpbody">
-        <h1>Simulated "Edit Post" Page</h1>
-        <div class="sim-postbox"><h2 class="hndle"><span>AI Content Creator Pro</span></h2><div class="inside"></div></div>
-        <p><em>Other page content...</em></p>
-    </div>
-
-    <!-- === NEW: Development Version Status Bar === -->
-    <div id="aicp-dev-status-bar"></div>
+    <!-- Template 4: Content Fleet Manager -->
+    <template id="fleet-manager-template">
+        <div class="aicp-module-padding">
+             <div class="aicp-form-row-group">
+                <div class="aicp-form-row">
+                    <label>Filter by Post Type</label>
+                    <select><option>All Posts</option><option>Posts</option><option>Pages</option></select>
+                </div>
+                <div class="aicp-form-row">
+                    <label>Search Content</label>
+                    <input type="search" placeholder="Search..." class="aicp-input">
+                </div>
+            </div>
+        </div>
+        <div class="aicp-post-list">
+            <!-- Simulated Post 1 -->
+            <div class="aicp-post-item">
+                <div class="aicp-post-title">Welcome to Our New Website!</div>
+                <div class="aicp-post-snippet">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout...</div>
+                <div class="aicp-post-actions">
+                    <button class="aicp-button-secondary">Enhance Title</button>
+                    <button class="aicp-button-secondary">Suggest Keywords</button>
+                    <button class="aicp-button-secondary">Lengthen</button>
+                </div>
+            </div>
+             <!-- Simulated Post 2 -->
+            <div class="aicp-post-item">
+                <div class="aicp-post-title">Top 5 Productivity Hacks for 2024</div>
+                <div class="aicp-post-snippet">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard...</div>
+                <div class="aicp-post-actions">
+                    <button class="aicp-button-secondary">Enhance Title</button>
+                    <button class="aicp-button-secondary">Suggest Keywords</button>
+                    <button class="aicp-button-secondary">Shorten</button>
+                </div>
+            </div>
+        </div>
+    </template>
 
     <script src="assets/admin.js"></script>
 </body>
