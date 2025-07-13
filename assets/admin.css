@@ -1,152 +1,60 @@
-/**
- * AI Content Creator Pro - Command Center
- * VERSION 2.1
- */
-document.addEventListener('DOMContentLoaded', function() {
+/* VERSION 2.1 - Intelligent Content Module */
 
-    const AICP_App = {
-        elements: {}, state: { currentView: 'standard-content' },
-        versions: { js: '2.1', css: '2.1' },
+:root {
+    --aicp-primary-color: #007cba;
+    --aicp-primary-hover: #0071a1;
+    --aicp-secondary-bg: #f6f7f7;
+    --aicp-border-color: #c3c4c7;
+    --aicp-text-color: #1d2327;
+    --aicp-text-light: #50575e;
+    --aicp-panel-bg: #ffffff;
+    --aicp-body-bg: #f0f0f1;
+}
 
-        // --- NEW: Data structure for the intelligent content module ---
-        contentStructure: {
-            "Select Type...": {},
-            "Social Media": {
-                "Select Platform...": {},
-                "Facebook": {
-                    "Select Layout...": {},
-                    "Wall Post": "facebook-wall-post-layout",
-                    "Reel Script": "facebook-reel-script-layout"
-                },
-                "X (Twitter)": {
-                    "Select Layout...": {},
-                    "Single Tweet": "twitter-single-tweet-layout", // (Template not yet created, but proves the structure)
-                }
-            },
-            "Blog Post": {
-                "Select Format...": {},
-                "Full Post": "blog-post-full-layout", // (Template not yet created)
-                "Outline": "blog-post-outline-layout" // (Template not yet created)
-            }
-        },
-        
-        init() {
-            console.log('AICP Command Center v2.1 Initializing...');
-            this.cacheDOMElements();
-            this.registerEventListeners();
-            this.updateDevStatus();
-            this.renderView(this.state.currentView);
-        },
-        
-        cacheDOMElements() {
-            this.elements.taskSelector = document.getElementById('aicp-task-selector');
-            this.elements.moduleContainer = document.getElementById('aicp-module-container');
-            this.elements.devStatusBar = document.getElementById('aicp-dev-status-bar');
-            this.elements.settingsPanel = document.getElementById('aicp-settings-panel');
-            this.elements.settingsBtn = document.getElementById('aicp-generation-settings-btn');
-            this.elements.settingsCloseBtn = document.getElementById('aicp-settings-panel-close-btn');
-        },
-        
-        registerEventListeners() {
-            this.elements.taskSelector.addEventListener('change', (e) => this.renderView(e.target.value));
-            this.elements.settingsBtn.addEventListener('click', () => this.elements.settingsPanel.classList.add('is-visible'));
-            this.elements.settingsCloseBtn.addEventListener('click', () => this.elements.settingsPanel.classList.remove('is-visible'));
-        },
-        
-        renderView(viewName) {
-            this.state.currentView = viewName;
-            const template = document.getElementById(`${viewName}-template`);
-            if (!template) {
-                console.error(`AICP Error: Template for view "${viewName}" not found.`);
-                return;
-            }
-            this.elements.moduleContainer.innerHTML = '';
-            this.elements.moduleContainer.appendChild(template.content.cloneNode(true));
-            console.log(`Rendered view: ${viewName}`);
+/* =================================================== */
+/* 1. CORE LAYOUT & STRUCTURE                          */
+/* =================================================== */
+body { background-color: var(--aicp-body-bg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; margin: 40px; }
+#aicp-container { background: var(--aicp-panel-bg); border: 1px solid var(--aicp-border-color); box-shadow: 0 5px 25px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; max-width: 800px; margin: auto; display: flex; flex-direction: column; min-height: 70vh; }
+.aicp-main-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: var(--aicp-secondary-bg); border-bottom: 1px solid var(--aicp-border-color); }
+.aicp-header-title { font-size: 18px; font-weight: 600; }
+#aicp-module-container { flex-grow: 1; display: flex; flex-direction: column; }
+.aicp-main-footer { padding: 12px 20px; background: var(--aicp-secondary-bg); border-top: 1px solid var(--aicp-border-color); display: flex; justify-content: space-between; align-items: center; }
 
-            // If the rendered view is our new complex module, initialize it.
-            if (viewName === 'standard-content') {
-                this._initContentCreationModule();
-            }
-        },
+/* =================================================== */
+/* 2. SHARED FORM ELEMENTS & COMPONENTS                */
+/* =================================================== */
+.aicp-module-padding { padding: 20px; }
+.aicp-form-row { margin-bottom: 16px; }
+.aicp-form-row:last-child { margin-bottom: 0; }
+.aicp-form-row-group { display: flex; flex-wrap: wrap; gap: 20px; }
+.aicp-form-row-group .aicp-form-row { flex: 1; min-width: 200px; }
+.aicp-cascading-dropdowns .aicp-form-row { margin-bottom: 0; }
+label { font-weight: 600; font-size: 14px; color: var(--aicp-text-color); display: block; }
+select, .aicp-input, .aicp-textarea, .aicp-input-number { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid var(--aicp-border-color); border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+.aicp-textarea { min-height: 80px; resize: vertical; }
+.aicp-button-primary, .aicp-button-secondary { padding: 8px 16px; font-size: 14px; cursor: pointer; border-radius: 4px; border-width: 1px; border-style: solid; }
+.aicp-button-primary { background: var(--aicp-primary-color); border-color: var(--aicp-primary-color); color: #fff; }
+.aicp-button-secondary { background: var(--aicp-secondary-bg); border-color: var(--aicp-border-color); color: var(--aicp-text-light); }
+.aicp-icon-button { background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; color: var(--aicp-text-light); }
+.aicp-collapsible-section { max-height: 0; overflow: hidden; opacity: 0; transition: all 0.3s ease-in-out; }
+.aicp-collapsible-section.is-expanded { max-height: 500px; opacity: 1; margin-top: 16px; }
 
-        // --- NEW: Initialization logic for the Content Creation module ---
-        _initContentCreationModule() {
-            const typeSelect = document.getElementById('content-type-select');
-            const platformSelect = document.getElementById('platform-format-select');
-            const layoutSelect = document.getElementById('layout-select');
-            const layoutContainer = document.getElementById('aicp-layout-container');
+/* =================================================== */
+/* 3. OUTPUT AREAS & PLACEHOLDERS                      */
+/* =================================================== */
+.aicp-output-area { flex-grow: 1; background-color: var(--aicp-secondary-bg); border-top: 1px solid var(--aicp-border-color); padding: 20px; display: flex; flex-direction: column; }
+.aicp-output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.aicp-output-header span { font-weight: 600; }
+.aicp-output-content { background: #fff; border: 1px solid var(--aicp-border-color); border-radius: 4px; padding: 16px; flex-grow: 1; overflow-y: auto; }
+.aicp-char-counter { font-size: 12px; color: var(--aicp-text-light); text-align: right; margin-top: 4px; }
+.aicp-placeholder { padding: 40px 20px; text-align: center; color: var(--aicp-text-light); border: 2px dashed var(--aicp-border-color); border-radius: 8px; margin-top: 16px; }
 
-            // Helper function to populate a select dropdown
-            const populateSelect = (selectEl, options) => {
-                selectEl.innerHTML = '';
-                options.forEach(option => {
-                    const opt = document.createElement('option');
-                    opt.value = opt.textContent = option;
-                    selectEl.appendChild(opt);
-                });
-            };
-
-            // 1. Populate initial "Content Type" dropdown
-            populateSelect(typeSelect, Object.keys(this.contentStructure));
-            
-            // 2. Event listener for "Content Type"
-            typeSelect.addEventListener('change', () => {
-                const selectedType = typeSelect.value;
-                const platforms = this.contentStructure[selectedType] || {};
-                
-                populateSelect(platformSelect, Object.keys(platforms));
-                platformSelect.disabled = Object.keys(platforms).length <= 1;
-                
-                // Trigger a change to update the next level
-                platformSelect.dispatchEvent(new Event('change'));
-            });
-            
-            // 3. Event listener for "Platform/Format"
-            platformSelect.addEventListener('change', () => {
-                const selectedType = typeSelect.value;
-                const selectedPlatform = platformSelect.value;
-                const layouts = this.contentStructure[selectedType]?.[selectedPlatform] || {};
-
-                populateSelect(layoutSelect, Object.keys(layouts));
-                layoutSelect.disabled = Object.keys(layouts).length <= 1;
-
-                // Trigger a change to render the layout
-                layoutSelect.dispatchEvent(new Event('change'));
-            });
-
-            // 4. Event listener for "Layout" - This renders the UI
-            layoutSelect.addEventListener('change', () => {
-                const selectedType = typeSelect.value;
-                const selectedPlatform = platformSelect.value;
-                const selectedLayout = layoutSelect.value;
-                
-                const templateId = this.contentStructure[selectedType]?.[selectedPlatform]?.[selectedLayout];
-                
-                layoutContainer.innerHTML = ''; // Clear previous layout
-                if (templateId) {
-                    const template = document.getElementById(templateId);
-                    if (template) {
-                        layoutContainer.appendChild(template.content.cloneNode(true));
-                    } else {
-                        console.error(`Layout template not found: ${templateId}`);
-                    }
-                } else {
-                    // Show placeholder if no specific layout is selected
-                    layoutContainer.innerHTML = `<div class="aicp-placeholder">[PLACEHOLDER] Please make a selection.</div>`;
-                }
-            });
-
-            // Trigger initial population
-            typeSelect.dispatchEvent(new Event('change'));
-        },
-        
-        updateDevStatus() {
-            if (this.elements.devStatusBar) {
-                this.elements.devStatusBar.textContent = `AICP v3 | JS: v${this.versions.js} | CSS: v${this.versions.css}`;
-            }
-        },
-    };
-
-    AICP_App.init();
-});
+/* =================================================== */
+/* 4. SETTINGS PANEL & DEV BAR                         */
+/* =================================================== */
+#aicp-settings-panel { position: fixed; top: 0; right: 0; width: 320px; height: 100%; background: var(--aicp-panel-bg); box-shadow: -10px 0 30px rgba(0,0,0,0.15); z-index: 10000; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); display: flex; flex-direction: column; }
+#aicp-settings-panel.is-visible { transform: translateX(0); }
+#aicp-settings-panel .aicp-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: var(--aicp-secondary-bg); border-bottom: 1px solid var(--aicp-border-color); }
+#aicp-settings-panel .aicp-panel-body { padding: 20px; }
+#aicp-dev-status-bar { position: fixed; bottom: 0; left: 0; background-color: #1d2327; color: #a7aaad; padding: 4px 10px; font-size: 12px; font-family: monospace; z-index: 100000; border-top-right-radius: 4px; }
