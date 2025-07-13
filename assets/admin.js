@@ -1,116 +1,152 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Creator Pro Workbench - Command Center v3</title>
-    <link rel="stylesheet" href="assets/admin.css">
-</head>
-<body>
+/**
+ * AI Content Creator Pro - Command Center
+ * VERSION 2.1
+ */
+document.addEventListener('DOMContentLoaded', function() {
 
-    <div id="aicp-container">
-        <div class="aicp-main-header">
-            <div class="aicp-header-title">AI Creator Pro</div>
-            <div class="aicp-task-selector-wrapper">
-                <label for="aicp-task-selector">Select a Task:</label>
-                <select id="aicp-task-selector">
-                    <option value="standard-content">Content Creation</option>
-                    <option value="image-studio">Image Studio</option>
-                    <option value="code-assistant">Code Assistant</option>
-                    <option value="fleet-manager">Content Fleet Manager</option>
-                </select>
-            </div>
-        </div>
+    const AICP_App = {
+        elements: {}, state: { currentView: 'standard-content' },
+        versions: { js: '2.1', css: '2.1' },
 
-        <div id="aicp-module-container"></div>
+        // --- NEW: Data structure for the intelligent content module ---
+        contentStructure: {
+            "Select Type...": {},
+            "Social Media": {
+                "Select Platform...": {},
+                "Facebook": {
+                    "Select Layout...": {},
+                    "Wall Post": "facebook-wall-post-layout",
+                    "Reel Script": "facebook-reel-script-layout"
+                },
+                "X (Twitter)": {
+                    "Select Layout...": {},
+                    "Single Tweet": "twitter-single-tweet-layout", // (Template not yet created, but proves the structure)
+                }
+            },
+            "Blog Post": {
+                "Select Format...": {},
+                "Full Post": "blog-post-full-layout", // (Template not yet created)
+                "Outline": "blog-post-outline-layout" // (Template not yet created)
+            }
+        },
+        
+        init() {
+            console.log('AICP Command Center v2.1 Initializing...');
+            this.cacheDOMElements();
+            this.registerEventListeners();
+            this.updateDevStatus();
+            this.renderView(this.state.currentView);
+        },
+        
+        cacheDOMElements() {
+            this.elements.taskSelector = document.getElementById('aicp-task-selector');
+            this.elements.moduleContainer = document.getElementById('aicp-module-container');
+            this.elements.devStatusBar = document.getElementById('aicp-dev-status-bar');
+            this.elements.settingsPanel = document.getElementById('aicp-settings-panel');
+            this.elements.settingsBtn = document.getElementById('aicp-generation-settings-btn');
+            this.elements.settingsCloseBtn = document.getElementById('aicp-settings-panel-close-btn');
+        },
+        
+        registerEventListeners() {
+            this.elements.taskSelector.addEventListener('change', (e) => this.renderView(e.target.value));
+            this.elements.settingsBtn.addEventListener('click', () => this.elements.settingsPanel.classList.add('is-visible'));
+            this.elements.settingsCloseBtn.addEventListener('click', () => this.elements.settingsPanel.classList.remove('is-visible'));
+        },
+        
+        renderView(viewName) {
+            this.state.currentView = viewName;
+            const template = document.getElementById(`${viewName}-template`);
+            if (!template) {
+                console.error(`AICP Error: Template for view "${viewName}" not found.`);
+                return;
+            }
+            this.elements.moduleContainer.innerHTML = '';
+            this.elements.moduleContainer.appendChild(template.content.cloneNode(true));
+            console.log(`Rendered view: ${viewName}`);
 
-        <div class="aicp-main-footer">
-            <button id="aicp-generation-settings-btn" class="aicp-icon-button" title="[PLACEHOLDER] Open generation settings">⚙️</button>
-            <button id="aicp-main-generate-btn" class="aicp-button-primary">Generate</button>
-        </div>
-    </div>
+            // If the rendered view is our new complex module, initialize it.
+            if (viewName === 'standard-content') {
+                this._initContentCreationModule();
+            }
+        },
 
-    <div id="aicp-settings-panel">
-        <div class="aicp-panel-header"><h3>Generation Settings</h3><button id="aicp-settings-panel-close-btn" class="aicp-close-button">×</button></div>
-        <div class="aicp-panel-body">
-            <div class="aicp-form-row"><label>Creativity <span class="aicp-tooltip" title="[PLACEHOLDER] Controls randomness. Higher values are more creative but can be less coherent.">🔬</span></label><input type="range" min="0" max="2" step="0.1" value="0.8" class="aicp-slider"></div>
-            <div class="aicp-form-row"><label>Consistency <span class="aicp-tooltip" title="[PLACEHOLDER] Controls the likelihood of sticking to common word patterns.">🔬</span></label><input type="range" min="0" max="1" step="0.05" value="0.95" class="aicp-slider"></div><hr>
-            <div class="aicp-form-row aicp-toggle-row"><label for="aicp-advanced-toggle">[PLACEHOLDER] Engage Mad Scientist Mode 🧪</label><input type="checkbox" id="aicp-advanced-toggle" class="aicp-switch"></div>
-            <div id="aicp-advanced-settings" class="aicp-collapsible-section"><small class="aicp-warning-text">[PLACEHOLDER] Warning: Adjusting these may cause the AI to produce unpredictable or nonsensical results!</small></div>
-        </div>
-    </div>
-    
-    <div id="aicp-dev-status-bar"></div>
+        // --- NEW: Initialization logic for the Content Creation module ---
+        _initContentCreationModule() {
+            const typeSelect = document.getElementById('content-type-select');
+            const platformSelect = document.getElementById('platform-format-select');
+            const layoutSelect = document.getElementById('layout-select');
+            const layoutContainer = document.getElementById('aicp-layout-container');
 
-    <!-- ======================= TEMPLATES ======================= -->
-    
-    <!-- MAIN TEMPLATE: Content Creation Module -->
-    <template id="standard-content-template">
-        <div class="aicp-module-padding">
-            <div class="aicp-form-row-group aicp-cascading-dropdowns">
-                <div class="aicp-form-row"><label>Content Type</label><select id="content-type-select"></select></div>
-                <div class="aicp-form-row"><label>Platform / Format</label><select id="platform-format-select" disabled></select></div>
-                <div class="aicp-form-row"><label>Layout</label><select id="layout-select" disabled></select></div>
-            </div>
-            <!-- Dynamic Layout UI will be injected here -->
-            <div id="aicp-layout-container">
-                 <div class="aicp-placeholder">[PLACEHOLDER] Select a content type to begin.</div>
-            </div>
-        </div>
-        <div class="aicp-output-area">
-            <div class="aicp-output-header"><span>Generated Content</span><div class="aicp-action-bar"></div></div>
-            <div id="main-output-content" class="aicp-output-content" contenteditable="true"></div>
-            <div class="aicp-char-counter">0 characters</div>
-        </div>
-    </template>
-    
-    <!-- SUB-TEMPLATE: Facebook Wall Post -->
-    <template id="facebook-wall-post-layout">
-        <div class="aicp-form-row">
-            <label for="fb-post-topic">Post Topic</label>
-            <textarea id="fb-post-topic" class="aicp-textarea" placeholder="e.g., Announcing our new summer sale starting next week!"></textarea>
-        </div>
-        <div class="aicp-form-row">
-            <label><input type="checkbox" class="include-ai-image-toggle"> Include AI-Generated Image</label>
-        </div>
-        <div class="ai-image-prompt-section aicp-collapsible-section">
-            <div class="aicp-form-row"><label for="image-desc-input">Image Description</label><textarea id="image-desc-input" class="aicp-textarea" placeholder="e.g., A bright, sunny beach scene with people enjoying our product"></textarea></div>
-        </div>
-    </template>
+            // Helper function to populate a select dropdown
+            const populateSelect = (selectEl, options) => {
+                selectEl.innerHTML = '';
+                options.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = opt.textContent = option;
+                    selectEl.appendChild(opt);
+                });
+            };
 
-    <!-- SUB-TEMPLATE: Facebook Reel Script -->
-    <template id="facebook-reel-script-layout">
-        <div class="aicp-form-row">
-            <label for="reel-topic">Reel Topic / Idea</label>
-            <input id="reel-topic" type="text" class="aicp-input" placeholder="e.g., How to use our new product in 3 easy steps">
-        </div>
-        <hr>
-        <div class="aicp-form-row">
-            <label>Hook (First 3 seconds) <span class="aicp-tooltip" title="[PLACEHOLDER] Grab the viewer's attention immediately. State a controversial opinion or ask a compelling question.">🔬</span></label>
-            <input type="text" class="aicp-input" placeholder="Generated hook will appear here...">
-        </div>
-        <div class="aicp-form-row">
-            <label>Main Points / Scenes</label>
-            <textarea class="aicp-textarea" rows="4" placeholder="Generated scene-by-scene script will appear here..."></textarea>
-        </div>
-         <div class="aicp-form-row">
-            <label>Call to Action</label>
-            <input type="text" class="aicp-input" placeholder="Generated call to action will appear here...">
-        </div>
-    </template>
-    
-    <!-- NOTE: We would add more sub-templates for Twitter, Blog Posts, etc. here -->
-    
-    <template id="image-studio-template">
-        <!-- (Code from previous version is unchanged) -->
-    </template>
-    <template id="code-assistant-template">
-        <!-- (Code from previous version is unchanged) -->
-    </template>
-    <template id="fleet-manager-template">
-        <!-- (Code from previous version is unchanged) -->
-    </template>
+            // 1. Populate initial "Content Type" dropdown
+            populateSelect(typeSelect, Object.keys(this.contentStructure));
+            
+            // 2. Event listener for "Content Type"
+            typeSelect.addEventListener('change', () => {
+                const selectedType = typeSelect.value;
+                const platforms = this.contentStructure[selectedType] || {};
+                
+                populateSelect(platformSelect, Object.keys(platforms));
+                platformSelect.disabled = Object.keys(platforms).length <= 1;
+                
+                // Trigger a change to update the next level
+                platformSelect.dispatchEvent(new Event('change'));
+            });
+            
+            // 3. Event listener for "Platform/Format"
+            platformSelect.addEventListener('change', () => {
+                const selectedType = typeSelect.value;
+                const selectedPlatform = platformSelect.value;
+                const layouts = this.contentStructure[selectedType]?.[selectedPlatform] || {};
 
-    <script src="assets/admin.js"></script>
-</body>
-</html>
+                populateSelect(layoutSelect, Object.keys(layouts));
+                layoutSelect.disabled = Object.keys(layouts).length <= 1;
+
+                // Trigger a change to render the layout
+                layoutSelect.dispatchEvent(new Event('change'));
+            });
+
+            // 4. Event listener for "Layout" - This renders the UI
+            layoutSelect.addEventListener('change', () => {
+                const selectedType = typeSelect.value;
+                const selectedPlatform = platformSelect.value;
+                const selectedLayout = layoutSelect.value;
+                
+                const templateId = this.contentStructure[selectedType]?.[selectedPlatform]?.[selectedLayout];
+                
+                layoutContainer.innerHTML = ''; // Clear previous layout
+                if (templateId) {
+                    const template = document.getElementById(templateId);
+                    if (template) {
+                        layoutContainer.appendChild(template.content.cloneNode(true));
+                    } else {
+                        console.error(`Layout template not found: ${templateId}`);
+                    }
+                } else {
+                    // Show placeholder if no specific layout is selected
+                    layoutContainer.innerHTML = `<div class="aicp-placeholder">[PLACEHOLDER] Please make a selection.</div>`;
+                }
+            });
+
+            // Trigger initial population
+            typeSelect.dispatchEvent(new Event('change'));
+        },
+        
+        updateDevStatus() {
+            if (this.elements.devStatusBar) {
+                this.elements.devStatusBar.textContent = `AICP v3 | JS: v${this.versions.js} | CSS: v${this.versions.css}`;
+            }
+        },
+    };
+
+    AICP_App.init();
+});
