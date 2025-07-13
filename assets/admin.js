@@ -5,10 +5,10 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     const AICP_App = {
-        elements: {}, state: { currentView: 'standard-content' },
+        elements: {}, 
+        state: { currentView: 'standard-content' },
         versions: { js: '2.1', css: '2.1' },
 
-        // --- NEW: Data structure for the intelligent content module ---
         contentStructure: {
             "Select Type...": {},
             "Social Media": {
@@ -20,18 +20,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 "X (Twitter)": {
                     "Select Layout...": {},
-                    "Single Tweet": "twitter-single-tweet-layout", // (Template not yet created, but proves the structure)
+                    "Single Tweet": "twitter-single-tweet-layout",
                 }
             },
             "Blog Post": {
                 "Select Format...": {},
-                "Full Post": "blog-post-full-layout", // (Template not yet created)
-                "Outline": "blog-post-outline-layout" // (Template not yet created)
+                "Full Post": "blog-post-full-layout",
+                "Outline": "blog-post-outline-layout"
             }
         },
         
         init() {
-            console.log('AICP Command Center v2.1 Initializing...');
             this.cacheDOMElements();
             this.registerEventListeners();
             this.updateDevStatus();
@@ -62,22 +61,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             this.elements.moduleContainer.innerHTML = '';
             this.elements.moduleContainer.appendChild(template.content.cloneNode(true));
-            console.log(`Rendered view: ${viewName}`);
 
-            // If the rendered view is our new complex module, initialize it.
             if (viewName === 'standard-content') {
                 this._initContentCreationModule();
             }
         },
 
-        // --- NEW: Initialization logic for the Content Creation module ---
         _initContentCreationModule() {
             const typeSelect = document.getElementById('content-type-select');
             const platformSelect = document.getElementById('platform-format-select');
             const layoutSelect = document.getElementById('layout-select');
             const layoutContainer = document.getElementById('aicp-layout-container');
 
-            // Helper function to populate a select dropdown
             const populateSelect = (selectEl, options) => {
                 selectEl.innerHTML = '';
                 options.forEach(option => {
@@ -87,57 +82,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             };
 
-            // 1. Populate initial "Content Type" dropdown
             populateSelect(typeSelect, Object.keys(this.contentStructure));
             
-            // 2. Event listener for "Content Type"
             typeSelect.addEventListener('change', () => {
                 const selectedType = typeSelect.value;
                 const platforms = this.contentStructure[selectedType] || {};
-                
                 populateSelect(platformSelect, Object.keys(platforms));
                 platformSelect.disabled = Object.keys(platforms).length <= 1;
-                
-                // Trigger a change to update the next level
                 platformSelect.dispatchEvent(new Event('change'));
             });
             
-            // 3. Event listener for "Platform/Format"
             platformSelect.addEventListener('change', () => {
                 const selectedType = typeSelect.value;
                 const selectedPlatform = platformSelect.value;
                 const layouts = this.contentStructure[selectedType]?.[selectedPlatform] || {};
-
                 populateSelect(layoutSelect, Object.keys(layouts));
                 layoutSelect.disabled = Object.keys(layouts).length <= 1;
-
-                // Trigger a change to render the layout
                 layoutSelect.dispatchEvent(new Event('change'));
             });
 
-            // 4. Event listener for "Layout" - This renders the UI
             layoutSelect.addEventListener('change', () => {
                 const selectedType = typeSelect.value;
                 const selectedPlatform = platformSelect.value;
                 const selectedLayout = layoutSelect.value;
-                
                 const templateId = this.contentStructure[selectedType]?.[selectedPlatform]?.[selectedLayout];
                 
-                layoutContainer.innerHTML = ''; // Clear previous layout
+                layoutContainer.innerHTML = '';
                 if (templateId) {
                     const template = document.getElementById(templateId);
                     if (template) {
                         layoutContainer.appendChild(template.content.cloneNode(true));
                     } else {
                         console.error(`Layout template not found: ${templateId}`);
+                        layoutContainer.innerHTML = `<div class="aicp-placeholder">[ERROR] Layout UI not found.</div>`;
                     }
                 } else {
-                    // Show placeholder if no specific layout is selected
-                    layoutContainer.innerHTML = `<div class="aicp-placeholder">[PLACEHOLDER] Please make a selection.</div>`;
+                    layoutContainer.innerHTML = `<div class="aicp-placeholder">[PLACEHOLDER] Please make a complete selection.</div>`;
                 }
             });
 
-            // Trigger initial population
             typeSelect.dispatchEvent(new Event('change'));
         },
         
