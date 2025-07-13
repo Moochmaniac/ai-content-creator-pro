@@ -42,7 +42,9 @@
     
     <div id="aicp-dev-status-bar"></div>
 
-    <!-- ======================= TEMPLATES ======================= -->
+    <!-- ================================================================= -->
+    <!-- TEMPLATES: These are hidden and used by JS to build the UI        -->
+    <!-- ================================================================= -->
     
     <!-- MAIN TEMPLATE: Content Creation Module -->
     <template id="standard-content-template">
@@ -99,16 +101,38 @@
         </div>
     </template>
     
-    <!-- NOTE: We would add more sub-templates for Twitter, Blog Posts, etc. here -->
-    
+    <!-- TEMPLATE 2: Image Studio -->
     <template id="image-studio-template">
-        <!-- (Code from previous version is unchanged) -->
+        <div class="aicp-module-padding">
+            <div class="aicp-form-row">
+                <label for="image-studio-prompt">Image Description</label>
+                <div class="aicp-input-with-button">
+                    <textarea id="image-studio-prompt" class="aicp-textarea" rows="3" placeholder="e.g., An astronaut riding a unicorn on Mars, photorealistic style"></textarea>
+                    <button class="aicp-button-secondary aicp-enhance-prompt" title="[PLACEHOLDER] Let AI improve this prompt for you">✨ Enhance</button>
+                </div>
+            </div>
+            <div class="aicp-form-row-group">
+                <div class="aicp-form-row"><label>Style Preset</label><select><option>Photorealistic</option><option>Digital Art</option><option>Vector Graphic</option></select></div>
+                <div class="aicp-form-row"><label>Aspect Ratio</label><select><option>Square (1:1)</option><option>Widescreen (16:9)</option><option>Portrait (4:5)</option></select></div>
+                 <div class="aicp-form-row"><label>Quantity</label><input type="number" min="1" max="4" value="1" class="aicp-input-number"></div>
+            </div>
+        </div>
+        <div class="aicp-output-area aicp-image-gallery"><div class="aicp-placeholder">[PLACEHOLDER] Your generated images will appear here.</div></div>
     </template>
+
+    <!-- TEMPLATE 3: Code Assistant -->
     <template id="code-assistant-template">
-        <!-- (Code from previous version is unchanged) -->
+        <div class="aicp-module-padding">
+            <div class="aicp-form-row"><label for="code-prompt">Describe the code you need</label><textarea id="code-prompt" class="aicp-textarea" rows="3" placeholder="e.g., A PHP function to calculate the factorial of a number"></textarea></div>
+            <div class="aicp-form-row"><label>Language</label><select><option>PHP</option><option>JavaScript</option><option>HTML</option><option>CSS</option><option>Python</option></select></div>
+        </div>
+        <div class="aicp-output-area"><div class="aicp-output-header"><span>Generated Code</span><button class="aicp-copy-button" title="Copy to clipboard">Copy</button></div><pre class="aicp-code-output"><code>// Your generated code will appear here.</code></pre></div>
     </template>
+
+    <!-- TEMPLATE 4: Content Fleet Manager -->
     <template id="fleet-manager-template">
-        <!-- (Code from previous version is unchanged) -->
+        <div class="aicp-module-padding"><div class="aicp-form-row-group"><div class="aicp-form-row"><label>Filter by Post Type</label><select><option>All Posts</option><option>Posts</option><option>Pages</option></select></div><div class="aicp-form-row"><label>Search Content</label><input type="search" placeholder="Search..." class="aicp-input"></div></div></div>
+        <div class="aicp-post-list"><div class="aicp-post-item"><div class="aicp-post-title">Welcome to Our New Website!</div><div class="aicp-post-snippet">It is a long established fact that a reader will be distracted by the readable content of a page...</div><div class="aicp-post-actions"><button class="aicp-button-secondary">Enhance Title</button><button class="aicp-button-secondary">Suggest Keywords</button><button class="aicp-button-secondary">Lengthen</button></div></div><div class="aicp-post-item"><div class="aicp-post-title">Top 5 Productivity Hacks for 2024</div><div class="aicp-post-snippet">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard...</div><div class="aicp-post-actions"><button class="aicp-button-secondary">Enhance Title</button><button class="aicp-button-secondary">Suggest Keywords</button><button class="aicp-button-secondary">Shorten</button></div></div></div>
     </template>
 
     <script src="assets/admin.js"></script>
