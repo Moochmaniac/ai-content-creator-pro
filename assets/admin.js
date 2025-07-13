@@ -1,37 +1,43 @@
 /**
  * AI Content Creator Pro - Command Center
- * VERSION 2.0
+ * VERSION 2.1
  */
 document.addEventListener('DOMContentLoaded', function() {
 
-    // --- Application Object: Encapsulates all logic ---
     const AICP_App = {
-        // --- Properties ---
-        elements: {}, // To store frequently accessed DOM elements
-        state: {
-            currentView: 'standard-content', // The default view
-        },
-        versions: {
-            js: '2.0',
-            css: '2.0',
-        },
+        elements: {}, state: { currentView: 'standard-content' },
+        versions: { js: '2.1', css: '2.1' },
 
-        /**
-         * The main entry point for the application.
-         */
+        // --- NEW: Data structure for the intelligent content module ---
+        contentStructure: {
+            "Select Type...": {},
+            "Social Media": {
+                "Select Platform...": {},
+                "Facebook": {
+                    "Select Layout...": {},
+                    "Wall Post": "facebook-wall-post-layout",
+                    "Reel Script": "facebook-reel-script-layout"
+                },
+                "X (Twitter)": {
+                    "Select Layout...": {},
+                    "Single Tweet": "twitter-single-tweet-layout", // (Template not yet created, but proves the structure)
+                }
+            },
+            "Blog Post": {
+                "Select Format...": {},
+                "Full Post": "blog-post-full-layout", // (Template not yet created)
+                "Outline": "blog-post-outline-layout" // (Template not yet created)
+            }
+        },
+        
         init() {
-            console.log('AICP Command Center v2.0 Initializing...');
+            console.log('AICP Command Center v2.1 Initializing...');
             this.cacheDOMElements();
             this.registerEventListeners();
             this.updateDevStatus();
-
-            // Render the default view on startup
             this.renderView(this.state.currentView);
         },
-
-        /**
-         * Find and store key DOM elements to avoid repeated lookups.
-         */
+        
         cacheDOMElements() {
             this.elements.taskSelector = document.getElementById('aicp-task-selector');
             this.elements.moduleContainer = document.getElementById('aicp-module-container');
@@ -39,92 +45,108 @@ document.addEventListener('DOMContentLoaded', function() {
             this.elements.settingsPanel = document.getElementById('aicp-settings-panel');
             this.elements.settingsBtn = document.getElementById('aicp-generation-settings-btn');
             this.elements.settingsCloseBtn = document.getElementById('aicp-settings-panel-close-btn');
-            this.elements.advancedToggle = document.getElementById('aicp-advanced-toggle');
-            this.elements.advancedSettings = document.getElementById('aicp-advanced-settings');
         },
-
-        /**
-         * Central location for all event listeners.
-         */
+        
         registerEventListeners() {
-            // Main Task Selector
-            this.elements.taskSelector.addEventListener('change', (e) => {
-                this.renderView(e.target.value);
-            });
-
-            // Settings Panel Toggle
-            this.elements.settingsBtn.addEventListener('click', () => {
-                this.elements.settingsPanel.classList.add('is-visible');
-            });
-            this.elements.settingsCloseBtn.addEventListener('click', () => {
-                this.elements.settingsPanel.classList.remove('is-visible');
-            });
-
-            // Advanced "Mad Scientist" Mode Toggle
-            this.elements.advancedToggle.addEventListener('change', (e) => {
-                this.elements.advancedSettings.classList.toggle('is-expanded', e.target.checked);
-            });
-
-            // Using Event Delegation for dynamic buttons inside the module container
-            this.elements.moduleContainer.addEventListener('click', (e) => {
-                const target = e.target;
-                if (target.classList.contains('aicp-enhance-prompt')) {
-                    alert('[PLACEHOLDER] AI Prompt Enhancement Activated!');
-                }
-                if (target.classList.contains('aicp-copy-button')) {
-                    alert('[PLACEHOLDER] Copied to clipboard!');
-                }
-            });
-
-             // Event Delegation for specific toggles
-             this.elements.moduleContainer.addEventListener('change', (e) => {
-                const target = e.target;
-                if (target.id === 'include-ai-image-toggle') {
-                    const imagePromptSection = document.getElementById('ai-image-prompt-section');
-                    if (imagePromptSection) {
-                        imagePromptSection.classList.toggle('is-expanded', target.checked);
-                    }
-                }
-            });
+            this.elements.taskSelector.addEventListener('change', (e) => this.renderView(e.target.value));
+            this.elements.settingsBtn.addEventListener('click', () => this.elements.settingsPanel.classList.add('is-visible'));
+            this.elements.settingsCloseBtn.addEventListener('click', () => this.elements.settingsPanel.classList.remove('is-visible'));
         },
-
-        /**
-         * Main UI rendering function. Clears the container and injects the selected template.
-         * @param {string} viewName - The name of the view to render (e.g., 'standard-content').
-         */
+        
         renderView(viewName) {
             this.state.currentView = viewName;
             const template = document.getElementById(`${viewName}-template`);
-            
             if (!template) {
                 console.error(`AICP Error: Template for view "${viewName}" not found.`);
-                this.elements.moduleContainer.innerHTML = `<p class="aicp-error">Error: Could not load view.</p>`;
                 return;
             }
-
-            // Clear the container and inject the new view
             this.elements.moduleContainer.innerHTML = '';
             this.elements.moduleContainer.appendChild(template.content.cloneNode(true));
-
             console.log(`Rendered view: ${viewName}`);
+
+            // If the rendered view is our new complex module, initialize it.
+            if (viewName === 'standard-content') {
+                this._initContentCreationModule();
+            }
+        },
+
+        // --- NEW: Initialization logic for the Content Creation module ---
+        _initContentCreationModule() {
+            const typeSelect = document.getElementById('content-type-select');
+            const platformSelect = document.getElementById('platform-format-select');
+            const layoutSelect = document.getElementById('layout-select');
+            const layoutContainer = document.getElementById('aicp-layout-container');
+
+            // Helper function to populate a select dropdown
+            const populateSelect = (selectEl, options) => {
+                selectEl.innerHTML = '';
+                options.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = opt.textContent = option;
+                    selectEl.appendChild(opt);
+                });
+            };
+
+            // 1. Populate initial "Content Type" dropdown
+            populateSelect(typeSelect, Object.keys(this.contentStructure));
             
-            // Call specific init functions for views that need extra JS logic
-            // This is a scalable way to manage view-specific code.
-            // if (viewName === 'some-complex-view') { this.initSomeComplexView(); }
+            // 2. Event listener for "Content Type"
+            typeSelect.addEventListener('change', () => {
+                const selectedType = typeSelect.value;
+                const platforms = this.contentStructure[selectedType] || {};
+                
+                populateSelect(platformSelect, Object.keys(platforms));
+                platformSelect.disabled = Object.keys(platforms).length <= 1;
+                
+                // Trigger a change to update the next level
+                platformSelect.dispatchEvent(new Event('change'));
+            });
+            
+            // 3. Event listener for "Platform/Format"
+            platformSelect.addEventListener('change', () => {
+                const selectedType = typeSelect.value;
+                const selectedPlatform = platformSelect.value;
+                const layouts = this.contentStructure[selectedType]?.[selectedPlatform] || {};
+
+                populateSelect(layoutSelect, Object.keys(layouts));
+                layoutSelect.disabled = Object.keys(layouts).length <= 1;
+
+                // Trigger a change to render the layout
+                layoutSelect.dispatchEvent(new Event('change'));
+            });
+
+            // 4. Event listener for "Layout" - This renders the UI
+            layoutSelect.addEventListener('change', () => {
+                const selectedType = typeSelect.value;
+                const selectedPlatform = platformSelect.value;
+                const selectedLayout = layoutSelect.value;
+                
+                const templateId = this.contentStructure[selectedType]?.[selectedPlatform]?.[selectedLayout];
+                
+                layoutContainer.innerHTML = ''; // Clear previous layout
+                if (templateId) {
+                    const template = document.getElementById(templateId);
+                    if (template) {
+                        layoutContainer.appendChild(template.content.cloneNode(true));
+                    } else {
+                        console.error(`Layout template not found: ${templateId}`);
+                    }
+                } else {
+                    // Show placeholder if no specific layout is selected
+                    layoutContainer.innerHTML = `<div class="aicp-placeholder">[PLACEHOLDER] Please make a selection.</div>`;
+                }
+            });
+
+            // Trigger initial population
+            typeSelect.dispatchEvent(new Event('change'));
         },
         
-        /**
-         * Updates the developer status bar with current file versions.
-         */
         updateDevStatus() {
             if (this.elements.devStatusBar) {
                 this.elements.devStatusBar.textContent = `AICP v3 | JS: v${this.versions.js} | CSS: v${this.versions.css}`;
             }
         },
-
     };
 
-    // --- Run the Application ---
     AICP_App.init();
-
 });
