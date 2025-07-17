@@ -1,6 +1,6 @@
 /**
  * AI Content Creator Pro - Command Center
- * VERSION 2.2
+ * VERSION 2.3
  */
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // --- Properties ---
         elements: {}, 
         state: { currentView: 'content-creator' },
-        versions: { js: '2.2', css: '2.2' },
+        versions: { js: '2.3', css: '2.2' },
 
         // --- Data structure for the intelligent content creator ---
         contentTree: {
@@ -129,6 +129,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 const templateId = this.contentTree[selectedType]?.[selectedPlatform]?.[selectedLayout] || null;
                 this.renderDynamicLayout(templateId);
             });
+
+            // --- NEW: Set a default view to prevent a blank screen on load ---
+            if (typeSelect.options.length > 1) {
+                typeSelect.value = 'Social Media Post';
+                typeSelect.dispatchEvent(new Event('change'));
+
+                if(platformSelect.options.length > 1) {
+                    platformSelect.value = 'Facebook';
+                    platformSelect.dispatchEvent(new Event('change'));
+
+                    if(layoutSelect.options.length > 1) {
+                        layoutSelect.value = 'Wall Post';
+                        layoutSelect.dispatchEvent(new Event('change'));
+                    }
+                }
+            }
         },
 
         /**
