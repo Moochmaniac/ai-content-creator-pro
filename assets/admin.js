@@ -6,37 +6,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const AICP_App = {
         elements: {}, 
-        state: { currentView: 'standard-content' },
+        state: { currentView: 'content-creator' },
         versions: { js: '2.1', css: '2.1' },
 
-        contentStructure: {
-            "Select Type...": {},
-            "Social Media": {
-                "Select Platform...": {},
+        // --- NEW: Data structure for the intelligent content creator ---
+        contentTree: {
+            "Select...": {},
+            "Social Media Post": {
+                "Select...": {},
                 "Facebook": {
-                    "Select Layout...": {},
-                    "Wall Post": "facebook-wall-post-layout",
-                    "Reel Script": "facebook-reel-script-layout"
+                    "Select...": {},
+                    "Wall Post": "layout-fb-wall-post",
+                    "Reel Script": "layout-fb-reel-script"
                 },
                 "X (Twitter)": {
-                    "Select Layout...": {},
-                    "Single Tweet": "twitter-single-tweet-layout",
+                    "Select...": {},
+                    "Single Tweet": "layout-generic-text", // Example of reusing a generic template
                 }
             },
             "Blog Post": {
-                "Select Format...": {},
-                "Full Post": "blog-post-full-layout",
-                "Outline": "blog-post-outline-layout"
+                "Select...": {},
+                "Introduction": "layout-blog-intro",
+                "Outline": "layout-generic-text",
+                "Full Draft": "layout-blog-intro"
             }
         },
-        
+
         init() {
             this.cacheDOMElements();
             this.registerEventListeners();
             this.updateDevStatus();
             this.renderView(this.state.currentView);
         },
-        
+
         cacheDOMElements() {
             this.elements.taskSelector = document.getElementById('aicp-task-selector');
             this.elements.moduleContainer = document.getElementById('aicp-module-container');
@@ -45,89 +47,110 @@ document.addEventListener('DOMContentLoaded', function() {
             this.elements.settingsBtn = document.getElementById('aicp-generation-settings-btn');
             this.elements.settingsCloseBtn = document.getElementById('aicp-settings-panel-close-btn');
         },
-        
+
         registerEventListeners() {
-            this.elements.taskSelector.addEventListener('change', (e) => this.renderView(e.target.value));
+            this.elements.taskSelector.addEventListener('change', e => this.renderView(e.target.value));
             this.elements.settingsBtn.addEventListener('click', () => this.elements.settingsPanel.classList.add('is-visible'));
             this.elements.settingsCloseBtn.addEventListener('click', () => this.elements.settingsPanel.classList.remove('is-visible'));
         },
         
         renderView(viewName) {
             this.state.currentView = viewName;
-            const template = document.getElementById(`${viewName}-template`);
+            const templateId = `${viewName}-template`;
+            const template = document.getElementById(templateId);
+            
             if (!template) {
-                console.error(`AICP Error: Template for view "${viewName}" not found.`);
+                this.elements.moduleContainer.innerHTML = `<p>Error: Template "${templateId}" not found.</p>`;
                 return;
             }
             this.elements.moduleContainer.innerHTML = '';
             this.elements.moduleContainer.appendChild(template.content.cloneNode(true));
-
-            if (viewName === 'standard-content') {
-                this._initContentCreationModule();
+            
+            // If the rendered view is the content creator, initialize its special logic
+            if (viewName === 'content-creator') {
+                this.initContentCreator();
             }
         },
 
-        _initContentCreationModule() {
+        // --- NEW: Logic for the Intelligent Content Creator ---
+        initContentCreator() {
             const typeSelect = document.getElementById('content-type-select');
             const platformSelect = document.getElementById('platform-format-select');
             const layoutSelect = document.getElementById('layout-select');
-            const layoutContainer = document.getElementById('aicp-layout-container');
-
-            const populateSelect = (selectEl, options) => {
-                selectEl.innerHTML = '';
-                options.forEach(option => {
-                    const opt = document.createElement('option');
-                    opt.value = opt.textContent = option;
-                    selectEl.appendChild(opt);
-                });
-            };
-
-            populateSelect(typeSelect, Object.keys(this.contentStructure));
             
+            // Populate the first dropdown
+            this.populateSelect(typeSelect, Object.keys(this.contentTree));
+
             typeSelect.addEventListener('change', () => {
                 const selectedType = typeSelect.value;
-                const platforms = this.contentStructure[selectedType] || {};
-                populateSelect(platformSelect, Object.keys(platforms));
-                platformSelect.disabled = Object.keys(platforms).length <= 1;
-                platformSelect.dispatchEvent(new Event('change'));
+                const platforms = this.contentTree[selectedType] || {};
+                this.populateSelect(platformSelect, Object.keys(platforms));
+                platformSelect.disabled = false;
+                // Reset subsequent dropdowns
+                this.populateSelect(layoutSelect, []);
+                layoutSelect.disabled = true;
+                this.renderDynamicLayout(null);
             });
-            
+
             platformSelect.addEventListener('change', () => {
                 const selectedType = typeSelect.value;
                 const selectedPlatform = platformSelect.value;
-                const layouts = this.contentStructure[selectedType]?.[selectedPlatform] || {};
-                populateSelect(layoutSelect, Object.keys(layouts));
-                layoutSelect.disabled = Object.keys(layouts).length <= 1;
-                layoutSelect.dispatchEvent(new Event('change'));
+                const layouts = this.contentTree[selectedType]?.[selectedPlatform] || {};
+                this.populateSelect(layoutSelect, Object.keys(layouts));
+                layoutSelect.disabled = false;
+                this.renderDynamicLayout(null);
             });
 
             layoutSelect.addEventListener('change', () => {
                 const selectedType = typeSelect.value;
                 const selectedPlatform = platformSelect.value;
                 const selectedLayout = layoutSelect.value;
-                const templateId = this.contentStructure[selectedType]?.[selectedPlatform]?.[selectedLayout];
-                
-                layoutContainer.innerHTML = '';
-                if (templateId) {
-                    const template = document.getElementById(templateId);
-                    if (template) {
-                        layoutContainer.appendChild(template.content.cloneNode(true));
-                    } else {
-                        console.error(`Layout template not found: ${templateId}`);
-                        layoutContainer.innerHTML = `<div class="aicp-placeholder">[ERROR] Layout UI not found.</div>`;
-                    }
-                } else {
-                    layoutContainer.innerHTML = `<div class="aicp-placeholder">[PLACEHOLDER] Please make a complete selection.</div>`;
-                }
+                const templateId = this.contentTree[selectedType]?.[selectedPlatform]?.[selectedLayout] || null;
+                this.renderDynamicLayout(templateId);
             });
-
-            typeSelect.dispatchEvent(new Event('change'));
         },
-        
-        updateDevStatus() {
-            if (this.elements.devStatusBar) {
-                this.elements.devStatusBar.textContent = `AICP v3 | JS: v${this.versions.js} | CSS: v${this.versions.css}`;
+
+        /**
+         * Helper function to populate a select dropdown with options.
+         * @param {HTMLSelectElement} selectElement - The dropdown to populate.
+         * @param {string[]} options - An array of strings for the options.
+         */
+        populateSelect(selectElement, options) {
+            selectElement.innerHTML = '';
+            options.forEach(optionText => {
+                const option = document.createElement('option');
+                option.value = optionText;
+                option.textContent = optionText;
+                selectElement.appendChild(option);
+            });
+        },
+
+        /**
+         * Renders the specific UI layout for a task (e.g., Wall Post, Reel Script).
+         * @param {string|null} templateId - The ID of the template to render.
+         */
+        renderDynamicLayout(templateId) {
+            const container = document.getElementById('aicp-dynamic-layout-container');
+            if (!container) return;
+
+            if (!templateId || templateId === "Select...") {
+                 container.innerHTML = `<div class="aicp-placeholder">[PLACEHOLDER] Select a layout to see its options.</div>`;
+                 return;
             }
+
+            const template = document.getElementById(templateId);
+            if (template) {
+                container.innerHTML = '';
+                container.appendChild(template.content.cloneNode(true));
+            } else {
+                // Fallback for layouts not yet created
+                container.innerHTML = `<div class="aicp-placeholder">[PLACEHOLDER] Layout options for "${templateId}" will appear here.</div>`;
+            }
+        },
+
+        updateDevStatus() {
+            if (!this.elements.devStatusBar) this.elements.devStatusBar = document.getElementById('aicp-dev-status-bar');
+            this.elements.devStatusBar.textContent = `AICP v3.1 | JS: v${this.versions.js} | CSS: v${this.versions.css}`;
         },
     };
 
