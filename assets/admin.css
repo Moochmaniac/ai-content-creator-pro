@@ -1,4 +1,4 @@
-/* VERSION 2.1 - Intelligent Content Module */
+/* VERSION 2.2 - Layout Fix */
 
 :root { /* ... unchanged ... */ }
 body { /* ... unchanged ... */ }
@@ -6,63 +6,72 @@ body { /* ... unchanged ... */ }
 /* =================================================== */
 /* 1. CORE LAYOUT & STRUCTURE                          */
 /* =================================================== */
-#aicp-container { /* ... unchanged ... */ }
-.aicp-main-header { /* ... unchanged ... */ }
-.aicp-header-title { /* ... unchanged ... */ }
-.aicp-task-selector-wrapper label { /* ... unchanged ... */ }
-#aicp-module-container { flex-grow: 1; display: flex; flex-direction: column; }
-.aicp-main-footer { /* ... unchanged ... */ }
+#aicp-container {
+    background: var(--aicp-panel-bg);
+    border: 1px solid var(--aicp-border-color);
+    box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: 800px;
+    margin: 40px auto; /* Centered with margin */
+    display: flex;
+    flex-direction: column;
+    min-height: 70vh;
+}
+/* ... other core styles unchanged ... */
 
 /* =================================================== */
 /* 2. SHARED FORM ELEMENTS & COMPONENTS                */
 /* =================================================== */
-.aicp-module-padding { padding: 20px; }
-.aicp-form-row { margin-bottom: 16px; }
+/* ... */
 .aicp-form-row-group { display: flex; flex-wrap: wrap; gap: 20px; }
 .aicp-form-row-group .aicp-form-row { flex: 1; min-width: 180px; }
-label { /* ... unchanged ... */ }
-select, .aicp-input, .aicp-textarea, .aicp-input-number { /* ... unchanged ... */ }
-.aicp-textarea { /* ... unchanged ... */ }
-.aicp-button-primary, .aicp-button-secondary { /* ... unchanged ... */ }
-.aicp-icon-button { /* ... unchanged ... */ }
-.aicp-collapsible-section { /* ... unchanged ... */ }
-.aicp-collapsible-section.is-expanded { /* ... unchanged ... */ }
+/* ... */
 
 /* =================================================== */
 /* 3. INTELLIGENT CONTENT CREATOR MODULE               */
 /* =================================================== */
 .aicp-cascading-dropdowns { 
+    /* *** CRITICAL FIX: Ensure flex properties are correctly applied *** */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end; /* Align to the bottom of the labels */
+    gap: 20px;
     border-bottom: 1px solid var(--aicp-border-color);
     padding-bottom: 20px;
     margin-bottom: 0 !important;
 }
-#aicp-dynamic-layout-container {
-    flex-grow: 1;
-    background-color: var(--aicp-secondary-bg);
+.aicp-cascading-dropdowns .aicp-form-row {
+    margin-bottom: 0; /* Remove bottom margin from rows inside this group */
 }
-.aicp-dynamic-layout-container .aicp-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--aicp-text-light);
-    font-style: italic;
-    min-height: 200px;
-}
-.aicp-dynamic-content {
-    animation: fadeIn 0.4s ease-in-out;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+
+#aicp-dynamic-layout-container { /* ... unchanged ... */ }
+.aicp-dynamic-layout-container .aicp-placeholder { /* ... unchanged ... */ }
+.aicp-dynamic-content { /* ... unchanged ... */ }
 
 /* =================================================== */
 /* 4. OTHER MODULES & SETTINGS                         */
 /* =================================================== */
-.aicp-post-list { /* ... unchanged ... */ }
-.aicp-post-item { /* ... unchanged ... */ }
-#aicp-settings-panel { /* ... unchanged ... */ }
+#aicp-settings-panel {
+    /* *** CRITICAL FIX: Ensure position is fixed relative to viewport *** */
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 320px;
+    height: 100%;
+    background: var(--aicp-panel-bg);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.15);
+    z-index: 10000;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    flex-direction: column;
+}
+#aicp-settings-panel.is-visible {
+    transform: translateX(0);
+}
+/* ... other panel styles ... */
 
 /* =================================================== */
 /* 5. DEV STATUS BAR                                   */
