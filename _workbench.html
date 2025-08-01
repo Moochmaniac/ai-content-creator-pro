@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Creator Pro Workbench - Command Center v3.3 (Templates Restored)</title>
+    <title>AI Creator Pro Workbench - Command Center v3.3 (Upgraded)</title>
     <link rel="stylesheet" href="assets/admin.css">
 </head>
 <body>
@@ -13,7 +13,7 @@
         <div class="aicp-main-header">
             <div class="aicp-header-title">AI Creator Pro</div>
             <div class="aicp-task-selector-wrapper">
-                <label for="aicp-task-selector">Select a Task:</label>
+                <label for="aicp-task-selector">Select a Task <span class="aicp-tooltip-icon" data-tooltip="Choose the main AI tool you want to use.">?</span></label>
                 <select id="aicp-task-selector">
                     <option value="content-creator">Content Creator</option>
                     <option value="image-studio">Image Studio</option>
@@ -24,7 +24,7 @@
         </div>
         <div id="aicp-module-container"></div>
         <div class="aicp-main-footer">
-            <button id="aicp-generation-settings-btn" class="aicp-icon-button" title="[PLACEHOLDER] Open generation settings">⚙️</button>
+            <button id="aicp-generation-settings-btn" class="aicp-icon-button" title="Open generation settings">⚙️</button>
             <button id="aicp-main-generate-btn" class="aicp-button-primary">Generate</button>
         </div>
     </div>
@@ -33,94 +33,102 @@
     <div id="aicp-settings-panel">
         <div class="aicp-panel-header"><h3>Generation Settings</h3><button id="aicp-settings-panel-close-btn" class="aicp-close-button">×</button></div>
         <div class="aicp-panel-body">
-            <!-- ... Settings content here ... -->
+            <!-- NEW: Model Selector Added -->
+            <div class="aicp-form-row">
+                <label>AI Model <span class="aicp-tooltip-icon" data-tooltip="Different models have different strengths. The list is loaded from your server.">?</span></label>
+                <select id="aicp-model-select">
+                    <option value="">Loading models...</option>
+                </select>
+            </div>
+             <!-- Other settings will go here -->
         </div>
     </div>
     
     <div id="aicp-dev-status-bar"></div>
 
     <!-- ================================================================= -->
-    <!-- TEMPLATES: FULL CONTENT RESTORED                                  -->
+    <!-- TEMPLATES                                                         -->
     <!-- ================================================================= -->
 
     <!-- Template 1: Content Creator Shell -->
     <template id="content-creator-template">
         <div class="aicp-module-padding">
             <div class="aicp-form-row-group aicp-cascading-dropdowns">
-                <div class="aicp-form-row"><label>Content Type</label><select id="content-type-select"></select></div>
-                <div class="aicp-form-row"><label>Platform / Format</label><select id="platform-format-select" disabled></select></div>
-                <div class="aicp-form-row"><label>Layout</label><select id="layout-select" disabled></select></div>
+                <div class="aicp-form-row">
+                    <label>Content Type <span class="aicp-tooltip-icon" data-tooltip="Select the general category of content you want to create.">?</span></label>
+                    <select id="content-type-select"></select>
+                </div>
+                <div class="aicp-form-row">
+                    <label>Platform / Format <span class="aicp-tooltip-icon" data-tooltip="Choose the specific format. This list changes based on the Content Type.">?</span></label>
+                    <select id="platform-format-select" disabled></select>
+                </div>
+                <div class="aicp-form-row">
+                    <label>Layout <span class="aicp-tooltip-icon" data-tooltip="Select the specific input fields for your chosen format.">?</span></label>
+                    <select id="layout-select" disabled></select>
+                </div>
             </div>
         </div>
         <div id="aicp-dynamic-layout-container">
-             <div class="aicp-placeholder">[PLACEHOLDER] Select a content type to begin.</div>
+             <div class="aicp-placeholder">Select a content type to begin.</div>
         </div>
     </template>
 
     <!-- Sub-Templates for Content Creator -->
     <template id="layout-fb-wall-post">
         <div class="aicp-module-padding aicp-dynamic-content">
-            <div class="aicp-form-row"><label>Post Text</label><textarea class="aicp-textarea" rows="5" placeholder="[PLACEHOLDER] e.g., Announcing our new summer sale!"></textarea></div>
+            <div class="aicp-form-row">
+                <label>Post Text <span class="aicp-tooltip-icon" data-tooltip="Enter the main idea or topic for your wall post.">?</span></label>
+                <textarea class="aicp-textarea" rows="5" placeholder="e.g., Announcing our new summer sale!"></textarea>
+            </div>
         </div>
     </template>
     <template id="layout-fb-reel-script">
         <div class="aicp-module-padding aicp-dynamic-content">
-            <div class="aicp-form-row"><label>Hook (First 3 Seconds)</label><input type="text" class="aicp-input"></div>
-            <div class="aicp-form-row"><label>Main Points</label><textarea class="aicp-textarea" rows="4"></textarea></div>
-            <div class="aicp-form-row"><label>Call to Action</label><input type="text" class="aicp-input"></div>
+            <div class="aicp-form-row"><label>Hook (First 3 Seconds) <span class="aicp-tooltip-icon" data-tooltip="Grab the viewer's attention immediately.">?</span></label><input type="text" class="aicp-input"></div>
+            <div class="aicp-form-row"><label>Main Points <span class="aicp-tooltip-icon" data-tooltip="List the key messages for the reel.">?</span></label><textarea class="aicp-textarea" rows="4"></textarea></div>
+            <div class="aicp-form-row"><label>Call to Action <span class="aicp-tooltip-icon" data-tooltip="What should the viewer do next?">?</span></label><input type="text" class="aicp-input"></div>
         </div>
     </template>
     <template id="layout-blog-intro">
         <div class="aicp-module-padding aicp-dynamic-content">
-            <div class="aicp-form-row"><label>Blog Post Title / Topic</label><input type="text" class="aicp-input"></div>
+            <div class="aicp-form-row"><label>Blog Post Title / Topic <span class="aicp-tooltip-icon" data-tooltip="The main subject of your blog post.">?</span></label><input type="text" class="aicp-input"></div>
         </div>
     </template>
     <template id="layout-generic-text">
         <div class="aicp-module-padding aicp-dynamic-content">
-            <div class="aicp-form-row"><label>Your Topic / Prompt</label><textarea class="aicp-textarea" rows="5"></textarea></div>
+            <div class="aicp-form-row">
+                <label>Your Topic / Prompt <span class="aicp-tooltip-icon" data-tooltip="Enter the core topic or specific instructions for the AI.">?</span></label>
+                <textarea class="aicp-textarea" rows="5"></textarea>
+            </div>
+        </div>
+    </template>
+    <template id="layout-topic-only">
+         <div class="aicp-module-padding aicp-dynamic-content">
+            <div class="aicp-form-row">
+                <label>Topic (Optional) <span class="aicp-tooltip-icon" data-tooltip="Provide a topic to narrow down the brainstorming results, or leave blank for general ideas.">?</span></label>
+                <textarea class="aicp-textarea" rows="2" placeholder="e.g., remote work productivity"></textarea>
+            </div>
         </div>
     </template>
 
     <!-- Template 2: Image Studio -->
     <template id="image-studio-template">
         <div class="aicp-module-padding">
-            <div class="aicp-form-row">
-                <label for="image-studio-prompt">Image Description</label>
-                <textarea id="image-studio-prompt" class="aicp-textarea" rows="3" placeholder="e.g., An astronaut riding a unicorn on Mars, photorealistic style"></textarea>
-            </div>
-            <div class="aicp-form-row-group">
-                <div class="aicp-form-row"><label>Style Preset</label><select><option>Photorealistic</option><option>Digital Art</option></select></div>
-                <div class="aicp-form-row"><label>Aspect Ratio</label><select><option>Square (1:1)</option><option>Widescreen (16:9)</option></select></div>
-                <div class="aicp-form-row"><label>Quantity</label><input type="number" min="1" max="4" value="1" class="aicp-input-number"></div>
-            </div>
-        </div>
-        <div class="aicp-output-area aicp-image-gallery">
-             <div class="aicp-placeholder">[PLACEHOLDER] Your generated images will appear here.</div>
+            <div class="aicp-placeholder">[Image Studio Module Placeholder]</div>
         </div>
     </template>
 
     <!-- Template 3: Code Assistant -->
     <template id="code-assistant-template">
         <div class="aicp-module-padding">
-            <div class="aicp-form-row"><label for="code-prompt">Describe the code you need</label><textarea id="code-prompt" class="aicp-textarea" rows="3"></textarea></div>
-            <div class="aicp-form-row"><label>Language</label><select><option>PHP</option><option>JavaScript</option></select></div>
-        </div>
-        <div class="aicp-output-area">
-            <pre class="aicp-code-output"><code>// Your generated code will appear here.</code></pre>
+            <div class="aicp-placeholder">[Code Assistant Module Placeholder]</div>
         </div>
     </template>
 
     <!-- Template 4: Content Wizard -->
     <template id="content-wizard-template">
         <div class="aicp-module-padding">
-             <div class="aicp-form-row-group">
-                <div class="aicp-form-row"><label>Filter by Post Type</label><select><option>All Posts</option></select></div>
-                <div class="aicp-form-row"><label>Search Content</label><input type="search" placeholder="Search..." class="aicp-input"></div>
-            </div>
-        </div>
-        <div class="aicp-post-list">
-            <div class="aicp-post-item"><div class="aicp-post-title">[Simulated] Welcome to Our New Website!</div></div>
-            <div class="aicp-post-item"><div class="aicp-post-title">[Simulated] Top 5 Productivity Hacks</div></div>
+            <div class="aicp-placeholder">[Content Wizard Module Placeholder]</div>
         </div>
     </template>
     
