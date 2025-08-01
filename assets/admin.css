@@ -1,82 +1,264 @@
-/* VERSION 2.2 - Layout Fix */
+/* AI Creator Pro - Command Center CSS */
+/* VERSION 2.3 - Tooltips & Polish */
 
-:root { /* ... unchanged ... */ }
-body { /* ... unchanged ... */ }
+:root {
+    --aicp-bg-main: #ffffff;
+    --aicp-panel-bg: #f9fafb;
+    --aicp-border-color: #e5e7eb;
+    --aicp-primary-blue: #3b82f6;
+    --aicp-text-main: #111827;
+    --aicp-text-secondary: #6b7280;
+    --aicp-text-placeholder: #9ca3af;
+    --aicp-spacing-unit: 8px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    background-color: #eef2f9;
+    color: var(--aicp-text-main);
+    margin: 0;
+    padding: 0;
+}
 
 /* =================================================== */
 /* 1. CORE LAYOUT & STRUCTURE                          */
 /* =================================================== */
 #aicp-container {
-    background: var(--aicp-panel-bg);
+    background: var(--aicp-bg-main);
     border: 1px solid var(--aicp-border-color);
-    box-shadow: 0 5px 25px rgba(0,0,0,0.1);
-    border-radius: 8px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+    border-radius: 12px;
     overflow: hidden;
-    max-width: 800px;
-    margin: 40px auto; /* Centered with margin */
+    max-width: 900px;
+    margin: 50px auto;
     display: flex;
     flex-direction: column;
-    min-height: 70vh;
+    min-height: 75vh;
 }
-/* ... other core styles unchanged ... */
+
+.aicp-main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--aicp-border-color);
+    background-color: var(--aicp-panel-bg);
+}
+
+.aicp-header-title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.aicp-task-selector-wrapper label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--aicp-text-secondary);
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#aicp-task-selector {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--aicp-border-color);
+    background-color: var(--aicp-bg-main);
+    font-size: 14px;
+}
+
+#aicp-module-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.aicp-module-padding {
+    padding: 24px;
+}
+
+.aicp-main-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--aicp-border-color);
+    background-color: var(--aicp-panel-bg);
+}
 
 /* =================================================== */
 /* 2. SHARED FORM ELEMENTS & COMPONENTS                */
 /* =================================================== */
-/* ... */
+
+.aicp-button-primary {
+    background-color: var(--aicp-primary-blue);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.aicp-button-primary:hover { background-color: #2563eb; }
+
+.aicp-icon-button {
+    background: none;
+    border: 1px solid transparent;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    line-height: 1;
+    transition: background-color 0.2s;
+}
+.aicp-icon-button:hover { background-color: var(--aicp-border-color); }
+
+.aicp-form-row { margin-bottom: 20px; }
+.aicp-form-row label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--aicp-text-secondary);
+    margin-bottom: 8px;
+}
+.aicp-input, .aicp-textarea, .aicp-input-number, #aicp-module-container select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--aicp-border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: var(--aicp-bg-main);
+    box-sizing: border-box; /* Important */
+}
+.aicp-textarea { resize: vertical; }
+.aicp-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+    color: var(--aicp-text-placeholder);
+    font-size: 14px;
+    height: 100%;
+    box-sizing: border-box;
+}
 .aicp-form-row-group { display: flex; flex-wrap: wrap; gap: 20px; }
 .aicp-form-row-group .aicp-form-row { flex: 1; min-width: 180px; }
-/* ... */
 
 /* =================================================== */
-/* 3. INTELLIGENT CONTENT CREATOR MODULE               */
+/* 3. TOOLTIP STYLES                                   */
+/* =================================================== */
+.aicp-tooltip-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-color: #a0a5aa;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 11px;
+    line-height: 16px;
+    cursor: help;
+    font-weight: bold;
+    user-select: none;
+    transition: background-color 0.15s ease-in-out;
+    flex-shrink: 0;
+}
+.aicp-tooltip-icon:hover { background-color: #787c82; }
+
+.aicp-tooltip-popup {
+    position: absolute;
+    z-index: 100010;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 4px;
+    max-width: 280px;
+    font-size: 13px;
+    line-height: 1.5;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    opacity: 0;
+    animation: aicp-tooltip-fadein 0.15s forwards;
+}
+.aicp-tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #333;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+@keyframes aicp-tooltip-fadein { to { opacity: 1; } }
+
+/* =================================================== */
+/* 4. CONTENT CREATOR MODULE                           */
 /* =================================================== */
 .aicp-cascading-dropdowns { 
-    /* *** CRITICAL FIX: Ensure flex properties are correctly applied *** */
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-end; /* Align to the bottom of the labels */
     gap: 20px;
     border-bottom: 1px solid var(--aicp-border-color);
     padding-bottom: 20px;
-    margin-bottom: 0 !important;
-}
-.aicp-cascading-dropdowns .aicp-form-row {
-    margin-bottom: 0; /* Remove bottom margin from rows inside this group */
+    margin-bottom: 20px !important;
 }
 
-#aicp-dynamic-layout-container { /* ... unchanged ... */ }
-.aicp-dynamic-layout-container .aicp-placeholder { /* ... unchanged ... */ }
-.aicp-dynamic-content { /* ... unchanged ... */ }
+#aicp-dynamic-layout-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
 
 /* =================================================== */
-/* 4. OTHER MODULES & SETTINGS                         */
+/* 5. SETTINGS PANEL                                   */
 /* =================================================== */
 #aicp-settings-panel {
-    /* *** CRITICAL FIX: Ensure position is fixed relative to viewport *** */
     position: fixed;
     top: 0;
     right: 0;
-    width: 320px;
+    width: 350px;
+    max-width: 90vw;
     height: 100%;
-    background: var(--aicp-panel-bg);
+    background: var(--aicp-bg-main);
     box-shadow: -10px 0 30px rgba(0,0,0,0.15);
     z-index: 10000;
     transform: translateX(100%);
     transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     display: flex;
     flex-direction: column;
+    border-left: 1px solid var(--aicp-border-color);
 }
-#aicp-settings-panel.is-visible {
-    transform: translateX(0);
+#aicp-settings-panel.is-visible { transform: translateX(0); }
+
+.aicp-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--aicp-border-color);
 }
-/* ... other panel styles ... */
+.aicp-panel-header h3 { margin: 0; font-size: 16px; }
+.aicp-close-button {
+    background: none; border: none; font-size: 24px;
+    cursor: pointer; padding: 5px; border-radius: 50%;
+    line-height: 1; transition: background-color 0.2s;
+}
+.aicp-close-button:hover { background-color: var(--aicp-border-color); }
+.aicp-panel-body { padding: 24px; }
+
 
 /* =================================================== */
-/* 5. DEV STATUS BAR                                   */
+/* 6. DEV STATUS BAR                                   */
 /* =================================================== */
 #aicp-dev-status-bar {
-    position: fixed; bottom: 0; left: 0; background-color: #1d2327; color: #a7aaad; padding: 4px 10px;
-    font-size: 12px; font-family: monospace; z-index: 100000; border-top-right-radius: 4px;
+    position: fixed; bottom: 0; left: 0; background-color: #1d2327;
+    color: #a7aaad; padding: 4px 10px; font-size: 12px;
+    font-family: monospace; z-index: 100000; border-top-right-radius: 4px;
 }
